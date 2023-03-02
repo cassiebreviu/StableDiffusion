@@ -10,7 +10,7 @@ For example the sentence "make a picture of green tree with flowers around it an
 ```
 | Latent Seed Image | Resulting image |
 | :--- | :--- |
-<img src="latent.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="sample-output-stablediff.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
+<img src="images/latent.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/sample-output-stablediff.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
 
 ## Prerequisites
 This tutorial can be run locally or in the cloud by leveraging Azure Machine Learning compute.
