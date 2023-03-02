@@ -3,7 +3,7 @@
 
 This repo contains the logic to do inferencing for the popular Stable Diffusion deep learning model in C#. Stable Diffusion models denoise a static image to create an image that represents the text prompt given by the user.
 
-For the below example sentence the [CLIP model](https://huggingface.co/docs/transformers/model_doc/clip) creates a text embedding that "understands" text and image relationship. A random noise image is created and then denoised with the `unet` model and scheduler algorithm to create an image that represents the text prompt.
+For the below example sentence the [CLIP model](https://huggingface.co/docs/transformers/model_doc/clip) creates a text embedding that connects text to image. A random noise image is created and then denoised with the `unet` model and scheduler algorithm to create an image that represents the text prompt. Lastly the decoder model `vae_decoder` is used to create a final image that is the result of the text prompt and the latent image.
 
 ```text
 "make a picture of green tree with flowers around it and a red sky" 
@@ -40,7 +40,7 @@ Once you have selected a model version repo, click `Files and Versions`, then se
 - Clone the repo:
 ```text
 git lfs install
-git clone https://huggingface.co/<contributor>/<model-name>
+git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
 ```
 
 - Copy the folders with the ONNX files to the C# project folder `\StableDiffusion\StableDiffusion`. The folders to copy are: `unet`, `vae_decoder`, `text_encoder`, `safety_checker`.
