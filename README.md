@@ -49,5 +49,5 @@ __________________________
 ##  Resources
 - [ONNX Runtime C# API Doc](https://onnxruntime.ai/docs/api/csharp/api)
 - [Get Started with C# in ONNX Runtime](https://onnxruntime.ai/docs/get-started/with-csharp.html)
-- [Hugging Face Stable Diffusion Blog](https://huggingface.co/blog/stable-diffusion)
+- [Hugging Face Stable Diffusion Blog](https://huggingface.co/blog/stable_diffusion)
 - [Stable Diffusion C# Tutorial for this Repo](https://onnxruntime.ai/docs/tutorials/csharp/stable-diffusion-csharp.html)
