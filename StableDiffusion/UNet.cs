@@ -66,8 +66,7 @@ namespace StableDiffusion
 
         public static SixLabors.ImageSharp.Image Inference(int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale, int batchSize, int height = 512, int width = 512)
         {
-            // Get path to model to create inference session.
-            var modelPath = @"C:\code\StableDiffusion\StableDiffusion\unet\model.onnx";
+            var modelPath = Directory.GetCurrentDirectory().ToString() + ("\\unet\\model.onnx");
 
             var scheduler = new LMSDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(numInferenceSteps);

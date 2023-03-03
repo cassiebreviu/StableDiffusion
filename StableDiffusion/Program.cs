@@ -8,6 +8,7 @@ namespace StableDiffusion
         {
             //test how long this takes to execute
             var watch = System.Diagnostics.Stopwatch.StartNew();
+            Directory.SetCurrentDirectory(@"..\..\..");
 
             //Default args
             var prompt = "make a picture of green tree with flowers around it and a red sky";

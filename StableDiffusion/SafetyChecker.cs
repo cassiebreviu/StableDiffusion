@@ -7,8 +7,8 @@ namespace StableDiffusion
     {
         public static int IsSafe(Tensor<float> resultImage)
         {
-            // Load the autoencoder model which will be used to decode the latents into image space. 
-            var safetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\safety_checker\model.onnx";
+
+            var safetyModelPath = Directory.GetCurrentDirectory().ToString() + ("\\safety_checker\\model.onnx");
             var cudaProviderOptions = new OrtCUDAProviderOptions();
             // use gpu
             var providerOptionsDict = new Dictionary<string, string>();

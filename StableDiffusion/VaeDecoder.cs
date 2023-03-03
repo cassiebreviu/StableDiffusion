@@ -9,8 +9,7 @@ namespace StableDiffusion
     {
         public static Tensor<float> Decoder(List<NamedOnnxValue> input)
         {
-            // Load the autoencoder model which will be used to decode the latents into image space. 
-            var vaeDecoderModelPath = @"C:\code\StableDiffusion\StableDiffusion\vae_decoder\model.onnx";
+            var vaeDecoderModelPath = Directory.GetCurrentDirectory().ToString() + ("\\vae_decoder\\model.onnx");
             // Create an InferenceSession from the Model Path.
             var vaeDecodeSession = new InferenceSession(vaeDecoderModelPath);
 

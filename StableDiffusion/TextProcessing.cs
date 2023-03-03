@@ -8,7 +8,9 @@ namespace StableDiffusion
         public static int[] TokenizeText(string text)
         {
             // Create Tokenizer and tokenize the sentence.
-            var tokenizerOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\text_tokenizer\custom_op_cliptok.onnx";
+
+            var tokenizerOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_tokenizer\\custom_op_cliptok.onnx");
+
             // Create session options for custom op of extensions
             var sessionOptions = new SessionOptions();
             var customOp = "ortextensions.dll";
@@ -60,7 +62,7 @@ namespace StableDiffusion
 
             var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<int>("input_ids", input_ids) };
 
-            var textEncoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\text_encoder\model.onnx";
+            var textEncoderOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_encoder\\model.onnx");
 
             var encodeSession = new InferenceSession(textEncoderOnnxPath);
             // Run inference.
