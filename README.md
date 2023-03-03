@@ -20,10 +20,12 @@ For the below example sentence the [CLIP model](https://huggingface.co/docs/tran
 
 ## Prerequisites
 
-- [Download the Source Code from GitHub](https://github.com/cassiebreviu/StableDiffusion)
-
 - [Visual Studio](https://visualstudio.microsoft.com/downloads/) or [VS Code](https://code.visualstudio.com/Download)
 - A GPU enabled machine with CUDA EP Configured. This was built on a GTX 3070 and it has not been tested on anything smaller. Follow [this tutorial to configure CUDA and cuDNN for GPU with ONNX Runtime and C# on Windows 11](https://onnxruntime.ai/docs/tutorials/csharp/csharp-gpu.html)
+- Clone this repo
+```git
+git clone https://github.com/cassiebreviu/StableDiffusion.git
+```
 
 ## Use Hugging Face to download the Stable Diffusion models
 
@@ -35,7 +37,7 @@ Download the [ONNX Stable Diffusion models from Hugging Face](https://huggingfac
 
 Once you have selected a model version repo, click `Files and Versions`, then select the `ONNX` branch. If there isn't an ONNX model branch available, use the `main` branch and convert it to ONNX. See the [ONNX conversion tutorial for PyTorch](https://learn.microsoft.com/windows/ai/windows-ml/tutorials/pytorch-convert-model) for more information.
 
-- Clone the repo:
+- Clone the model repo:
 ```text
 git lfs install
 git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
