@@ -16,7 +16,7 @@ For the below example sentence the [CLIP model](https://huggingface.co/docs/tran
 
 | <img src="images/cat-sunglasses.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/dog-beach-sample.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
 
-| <img src="images/cats-sunset.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/shipwreck.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
+| <img src="images/cabin.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/shipwreck.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
 
 ## Prerequisites
 
