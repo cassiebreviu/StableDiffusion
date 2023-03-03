@@ -43,11 +43,11 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
 
 - Copy the folders with the ONNX files to the C# project folder `\StableDiffusion\StableDiffusion`. The folders to copy are: `unet`, `vae_decoder`, `text_encoder`, `safety_checker`.
 _____________________
-## Follow the full Stable Diffusion C# Tutorial for this Repo [here](https://cassiebreviu.github.io/onnxruntime/docs/tutorials/csharp/stable-diffusion-csharp.html)
+## Follow the full Stable Diffusion C# Tutorial for this Repo [here](https://onnxruntime.ai/docs/tutorials/csharp/stable-diffusion-csharp.html)
 
 __________________________
 ##  Resources
 - [ONNX Runtime C# API Doc](https://onnxruntime.ai/docs/api/csharp/api)
 - [Get Started with C# in ONNX Runtime](https://onnxruntime.ai/docs/get-started/with-csharp.html)
 - [Hugging Face Stable Diffusion Blog](https://huggingface.co/blog/stable-diffusion)
-- [Stable Diffusion C# Tutorial for this Repo](https://cassiebreviu.github.io/onnxruntime/docs/tutorials/csharp/stable-diffusion-csharp.html)
+- [Stable Diffusion C# Tutorial for this Repo](https://onnxruntime.ai/docs/tutorials/csharp/stable-diffusion-csharp.html)
