@@ -1,16 +1,22 @@
 
 # Inference Stable Diffusion with C# and ONNX Runtime
 
-This repo contains the logic to do inferencing for the popular Stable Diffusion deep learning model in C#. Stable Diffusion models denoise a static image to create an image that represents the text prompt given by the user.
+This repo contains the logic to do inferencing for the popular Stable Diffusion deep learning model in C#.  Stable Diffusion models take a text prompt and create an image that represents the text. See the example below:
 
 For the below example sentence the [CLIP model](https://huggingface.co/docs/transformers/model_doc/clip) creates a text embedding that connects text to image. A random noise image is created and then denoised with the `unet` model and scheduler algorithm to create an image that represents the text prompt. Lastly the decoder model `vae_decoder` is used to create a final image that is the result of the text prompt and the latent image.
 
 ```text
 "make a picture of green tree with flowers around it and a red sky" 
 ```
-| Latent Seed Image | Resulting image |
+| Auto Generated Random Latent Seed Input | Resulting image output|
 | :--- | :--- |
 <img src="images/latent.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/sample-output-stablediff.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
+
+## More Images Created with this Repo:
+
+| <img src="images/cat-sunglasses.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/dog-beach-sample.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
+
+| <img src="images/cats-sunset.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> | <img src="images/shipwreck.png" width="256" height="256" alt="Image of browser inferencing on sample images."/> |
 
 ## Prerequisites
 
@@ -36,10 +42,11 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
 ```
 
 - Copy the folders with the ONNX files to the C# project folder `\StableDiffusion\StableDiffusion`. The folders to copy are: `unet`, `vae_decoder`, `text_encoder`, `safety_checker`.
+_____________________
+## Follow the full Stable Diffusion C# Tutorial for this Repo [here](https://cassiebreviu.github.io/onnxruntime/docs/tutorials/csharp/stable-diffusion-csharp.html)
 
-## [Stable Diffusion C# Tutorial for this Repo](https://cassiebreviu.github.io/onnxruntime/docs/tutorials/csharp/stable-diffusion-csharp.html)
-
-# Resources
+__________________________
+##  Resources
 - [ONNX Runtime C# API Doc](https://onnxruntime.ai/docs/api/csharp/api)
 - [Get Started with C# in ONNX Runtime](https://onnxruntime.ai/docs/get-started/with-csharp.html)
 - [Hugging Face Stable Diffusion Blog](https://huggingface.co/blog/stable-diffusion)

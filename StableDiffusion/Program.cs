@@ -11,7 +11,7 @@ namespace StableDiffusion
             Directory.SetCurrentDirectory(@"..\..\..");
 
             //Default args
-            var prompt = "make a picture of green tree with flowers around it and a red sky";
+            var prompt = "a cat fashion show with sunglasses";
             Console.WriteLine(prompt);
 
             // Number of denoising steps
