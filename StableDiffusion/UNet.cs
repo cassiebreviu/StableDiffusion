@@ -95,10 +95,10 @@ namespace StableDiffusion
 
             cudaProviderOptions.UpdateOptions(providerOptionsDict);
 
-            var options = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
+            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
 
             // Create Inference Session
-            var unetSession = new InferenceSession(modelPath, options);
+            var unetSession = new InferenceSession(modelPath, sessionOptions);
 
             var input = new List<NamedOnnxValue>();
             for (int t = 0; t < timesteps.Length; t++)

@@ -62,9 +62,12 @@ namespace StableDiffusion
 
             var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<int>("input_ids", input_ids) };
 
+            // Set CUDA EP
+            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider();
+
             var textEncoderOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_encoder\\model.onnx");
 
-            var encodeSession = new InferenceSession(textEncoderOnnxPath);
+            var encodeSession = new InferenceSession(textEncoderOnnxPath, sessionOptions);
             // Run inference.
             var encoded = encodeSession.Run(input);
 
