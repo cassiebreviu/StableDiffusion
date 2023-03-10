@@ -5,12 +5,9 @@ namespace StableDiffusion
 {
     public static class TextProcessing
     {
+        // Create Tokenizer and tokenize the sentence.
         public static int[] TokenizeText(string text, string ortExtensionsPath, string tokenizerOnnxPath)
         {
-            // Create Tokenizer and tokenize the sentence.
-
-            //var tokenizerOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_tokenizer\\custom_op_cliptok.onnx");
-
             // Create session options for custom op of extensions
             var sessionOptions = new SessionOptions();
             sessionOptions.RegisterCustomOpLibraryV2(ortExtensionsPath, out var libraryHandle);

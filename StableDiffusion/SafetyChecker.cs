@@ -7,7 +7,6 @@ namespace StableDiffusion
     {
         public static int IsSafe(Tensor<float> resultImage, string safetyModelPath)
         {
-            //var safetyModelPath = Directory.GetCurrentDirectory().ToString() + ("\\safety_checker\\model.onnx");
             var cudaProviderOptions = new OrtCUDAProviderOptions();
             // use gpu
             var providerOptionsDict = new Dictionary<string, string>();

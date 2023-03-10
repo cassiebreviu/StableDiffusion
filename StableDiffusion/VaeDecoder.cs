@@ -17,7 +17,7 @@ namespace StableDiffusion
 
             // Run session and send the input data in to get inference output. 
             var output = vaeDecodeSession.Run(input);
-            var result = (output.ToList().First().Value as Tensor<float>);
+            var result = (output.First().Value as Tensor<float>);
 
             return result;
         }
