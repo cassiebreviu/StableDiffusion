@@ -8,10 +8,10 @@ namespace StableDiffusion
         const string BasePath = "../../../";
         const string OrtExtensionsPath = BasePath + "ortextensions.dll";
         const string OnnxModelsBasePath = BasePath; // Instead of copying models point to stable diffusion repo e.g. `stable-diffusion-v1-5`
-        const string TokenizerOnnxPath = BasePath + "text_tokenizer/custom_op_cliptok.onnx";
-        const string TextEncoderOnnxPath = BasePath + "text_encoder/model.onnx";
-        const string UnetOnnxPath = BasePath + "unet/model.onnx";
-        const string VaeDecoderOnnxPath = BasePath + "vae_decoder/model.onnx";
+        const string TokenizerOnnxPath = OnnxModelsBasePath + "text_tokenizer/custom_op_cliptok.onnx";
+        const string TextEncoderOnnxPath = OnnxModelsBasePath + "text_encoder/model.onnx";
+        const string UnetOnnxPath = OnnxModelsBasePath + "unet/model.onnx";
+        const string VaeDecoderOnnxPath = OnnxModelsBasePath + "vae_decoder/model.onnx";
 
         static void Main(string[] args)
         {
@@ -23,7 +23,7 @@ namespace StableDiffusion
             Console.WriteLine(prompt);
 
             // Number of denoising steps
-            var num_inference_steps = 10;
+            var num_inference_steps = 40;
             // Scale for classifier-free guidance
             var guidance_scale = 7.5;
             //num of images requested
