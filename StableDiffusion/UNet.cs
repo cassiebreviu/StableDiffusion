@@ -1,20 +1,22 @@
 ﻿using Microsoft.ML.Data;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace StableDiffusion
 {
     public class UNet
-    { 
+    {
         public static List<NamedOnnxValue> CreateUnetModelInput(Tensor<float> encoderHiddenStates, Tensor<float> sample, long timeStep)
         {
 
-            var input = new List<NamedOnnxValue> { 
+            var input = new List<NamedOnnxValue> {
                 NamedOnnxValue.CreateFromTensor("encoder_hidden_states", encoderHiddenStates),
                 NamedOnnxValue.CreateFromTensor("sample", sample),
                 NamedOnnxValue.CreateFromTensor("timestep", new DenseTensor<long>(new long[] { timeStep }, new int[] { 1 }))
             };
-            
+
             return input;
 
         }
@@ -26,7 +28,7 @@ namespace StableDiffusion
             var latents = new DenseTensor<float>(new[] { batchSize, channels, height / 8, width / 8 });
             var latentsArray = latents.ToArray();
 
-            for(int i=0; i < latentsArray.Length; i++)
+            for (int i = 0; i < latentsArray.Length; i++)
             {
                 // Generate a random number from a normal distribution with mean 0 and variance 1
                 var u1 = random.NextDouble(); // Uniform(0,1) random number
@@ -64,10 +66,10 @@ namespace StableDiffusion
             return noisePred;
         }
 
-        public static SixLabors.ImageSharp.Image Inference(int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale, int batchSize, int height = 512, int width = 512)
+        public static Image<Rgba32> Inference(string modelPath, string vaeDecoderModelPath,
+            int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale,
+            int batchSize, int height, int width)
         {
-            var modelPath = Directory.GetCurrentDirectory().ToString() + ("\\unet\\model.onnx");
-
             var scheduler = new LMSDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(numInferenceSteps);
 
@@ -132,7 +134,7 @@ namespace StableDiffusion
 
                 // LMS Scheduler Step
                 latents = scheduler.Step(noisePred, timesteps[t], latents);
-                Console.WriteLine($"latents result after step {t} min {latents.Min()} max {latents.Max()}");    
+                Console.WriteLine($"latents result after step {t} min {latents.Min()} max {latents.Max()}");
 
             }
 
@@ -142,15 +144,15 @@ namespace StableDiffusion
             var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
 
             // Decode image
-            var imageResultTensor = VaeDecoder.Decoder(decoderInput);
+            var imageResultTensor = VaeDecoder.Decoder(decoderInput, vaeDecoderModelPath);
 
             // TODO: Fix safety checker model
             //var isSafe = SafetyChecker.IsSafe(imageResultTensor);
 
             ////if (isSafe == 1)
             //{ 
-                var image = VaeDecoder.ConvertToImage(imageResultTensor);
-                return image;
+            var image = VaeDecoder.ConvertToImage(imageResultTensor, width, height);
+            return image;
             //}
 
         }

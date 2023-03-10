@@ -5,10 +5,9 @@ namespace StableDiffusion
 {
     public static class SafetyChecker
     {
-        public static int IsSafe(Tensor<float> resultImage)
+        public static int IsSafe(Tensor<float> resultImage, string safetyModelPath)
         {
-
-            var safetyModelPath = Directory.GetCurrentDirectory().ToString() + ("\\safety_checker\\model.onnx");
+            //var safetyModelPath = Directory.GetCurrentDirectory().ToString() + ("\\safety_checker\\model.onnx");
             var cudaProviderOptions = new OrtCUDAProviderOptions();
             // use gpu
             var providerOptionsDict = new Dictionary<string, string>();
@@ -25,8 +24,8 @@ namespace StableDiffusion
             SessionOptions options = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
             var safetySession = new InferenceSession(safetyModelPath, options);
 
-            var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("clip_input", resultImage)};
-            
+            var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("clip_input", resultImage) };
+
             // Run session and send the input data in to get inference output. 
             var output = safetySession.Run(input);
             var result = (output.ToList().First().Value as IEnumerable<int>).ToArray()[0];

@@ -1,23 +1,21 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace StableDiffusion
 {
     public static class VaeDecoder
     {
-        public static Tensor<float> Decoder(List<NamedOnnxValue> input)
+        public static Tensor<float> Decoder(List<NamedOnnxValue> input, string vaeDecoderModelPath)
         {
-            var vaeDecoderModelPath = Directory.GetCurrentDirectory().ToString() + ("\\vae_decoder\\model.onnx");
-
             // Set CUDA EP
             var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider();
 
             // Create an InferenceSession from the Model Path.
             var vaeDecodeSession = new InferenceSession(vaeDecoderModelPath, sessionOptions);
 
-           // Run session and send the input data in to get inference output. 
+            // Run session and send the input data in to get inference output. 
             var output = vaeDecodeSession.Run(input);
             var result = (output.ToList().First().Value as Tensor<float>);
 
@@ -25,7 +23,7 @@ namespace StableDiffusion
         }
 
         // create method to convert float array to an image with imagesharp
-        public static Image<Rgba32> ConvertToImage(Tensor<float> output, int width = 512, int height = 512, string imageName = "sample")
+        public static Image<Rgba32> ConvertToImage(Tensor<float> output, int width, int height)
         {
             var result = new Image<Rgba32>(width, height);
 
@@ -40,8 +38,6 @@ namespace StableDiffusion
                     );
                 }
             }
-            result.Save($@"C:/code/StableDiffusion/{imageName}.png");
-
             return result;
         }
     }

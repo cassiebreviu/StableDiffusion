@@ -1,21 +1,20 @@
-﻿using Microsoft.ML.OnnxRuntime.Tensors;
-using Microsoft.ML.OnnxRuntime;
+﻿using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace StableDiffusion
 {
     public static class TextProcessing
     {
-        public static int[] TokenizeText(string text)
+        public static int[] TokenizeText(string text, string ortExtensionsPath, string tokenizerOnnxPath)
         {
             // Create Tokenizer and tokenize the sentence.
 
-            var tokenizerOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_tokenizer\\custom_op_cliptok.onnx");
+            //var tokenizerOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_tokenizer\\custom_op_cliptok.onnx");
 
             // Create session options for custom op of extensions
             var sessionOptions = new SessionOptions();
-            var customOp = "ortextensions.dll";
-            sessionOptions.RegisterCustomOpLibraryV2(customOp, out var libraryHandle);
-            
+            sessionOptions.RegisterCustomOpLibraryV2(ortExtensionsPath, out var libraryHandle);
+
             // Create an InferenceSession from the onnx clip tokenizer.
             var tokenizeSession = new InferenceSession(tokenizerOnnxPath, sessionOptions);
             var inputTensor = new DenseTensor<string>(new string[] { text }, new int[] { 1 });
@@ -49,13 +48,13 @@ namespace StableDiffusion
             var modelMaxLength = 77;
             var inputIds = new List<Int32>();
             inputIds.Add(49406);
-            var pad = Enumerable.Repeat(blankTokenValue, modelMaxLength - inputIds.Count()).ToArray();
+            var pad = Enumerable.Repeat(blankTokenValue, modelMaxLength - inputIds.Count).ToArray();
             inputIds.AddRange(pad);
 
             return inputIds.ToArray();
         }
 
-        public static DenseTensor<float> TextEncoder(int[] tokenizedInput)
+        public static DenseTensor<float> TextEncoder(int[] tokenizedInput, string textEncoderOnnxPath)
         {
             // Create input tensor.
             var input_ids = TensorHelper.CreateTensor(tokenizedInput, new[] { 1, tokenizedInput.Count() });
@@ -65,13 +64,12 @@ namespace StableDiffusion
             // Set CUDA EP
             var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider();
 
-            var textEncoderOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_encoder\\model.onnx");
 
             var encodeSession = new InferenceSession(textEncoderOnnxPath, sessionOptions);
             // Run inference.
             var encoded = encodeSession.Run(input);
 
-            var lastHiddenState = (encoded.ToList().First().Value as IEnumerable<float>).ToArray();
+            var lastHiddenState = (encoded.First().Value as IEnumerable<float>).ToArray();
             var lastHiddenStateTensor = TensorHelper.CreateTensor(lastHiddenState.ToArray(), new[] { 1, 77, 768 });
 
             return lastHiddenStateTensor;
