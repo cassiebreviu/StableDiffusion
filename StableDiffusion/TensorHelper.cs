@@ -8,7 +8,7 @@ namespace StableDiffusion
         {
             return new DenseTensor<T>(data, dimensions); ;
         }
-        
+
         public static DenseTensor<float> DivideTensorByFloat(float[] data, float value, int[] dimensions)
         {
             for (int i = 0; i < data.Length; i++)
@@ -31,7 +31,7 @@ namespace StableDiffusion
 
         public static DenseTensor<float> AddTensors(float[] sample, float[] sumTensor, int[] dimensions)
         {
-            for(var i=0; i < sample.Length; i++)
+            for (var i = 0; i < sample.Length; i++)
             {
                 sample[i] = sample[i] + sumTensor[i];
             }
@@ -42,14 +42,17 @@ namespace StableDiffusion
         {
             var tensor1 = new DenseTensor<float>(dimensions);
             var tensor2 = new DenseTensor<float>(dimensions);
-
-            for (int i = 0; i < 1; i++)
+            var dim0 = dimensions[0];
+            var dim1 = dimensions[1];
+            var dim2 = dimensions[2];
+            var dim3 = dimensions[3];
+            for (int i = 0; i < dim0; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < dim1; j++)
                 {
-                    for (int k = 0; k < 512 / 8; k++)
+                    for (int k = 0; k < dim2; k++)
                     {
-                        for (int l = 0; l < 512 / 8; l++)
+                        for (int l = 0; l < dim3; l++)
                         {
                             tensor1[i, j, k, l] = tensorToSplit[i, j, k, l];
                             tensor2[i, j, k, l] = tensorToSplit[i, j + 4, k, l];
