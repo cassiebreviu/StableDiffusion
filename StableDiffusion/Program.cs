@@ -15,12 +15,11 @@ namespace StableDiffusion
 
         static void Main(string[] args)
         {
-            //test how long this takes to execute
+            // Test how long this takes to execute
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            //Directory.SetCurrentDirectory(@"..\..\..");
 
-            //Default args
-            var prompt = "egg";
+            // Default args
+            var prompt = "a fireplace in an old cabin in the woods";
             Console.WriteLine(prompt);
 
             // Number of denoising steps
@@ -61,8 +60,6 @@ namespace StableDiffusion
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Console.WriteLine("Time taken: " + elapsedMs + "ms");
-
         }
-
     }
 }
