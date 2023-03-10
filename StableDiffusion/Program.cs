@@ -8,7 +8,7 @@ namespace StableDiffusion
         {
             //test how long this takes to execute
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            Directory.SetCurrentDirectory(@"..\..\..");
+            Directory.SetCurrentDirectory(@"..\..\..\..");
 
             //Default args
             var prompt = "a fireplace in an old cabin in the woods";
