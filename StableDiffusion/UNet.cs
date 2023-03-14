@@ -81,21 +81,11 @@ namespace StableDiffusion
             // save latent as an image
             // VaeDecoder.ConvertToImage(latents, 64, 64, "latent.png");
 
-            // Set CUDA EP
-            var cudaProviderOptions = new OrtCUDAProviderOptions();
-            var providerOptionsDict = new Dictionary<string, string>();
-
-            providerOptionsDict["device_id"] = "0";
-            //providerOptionsDict["gpu_mem_limit"] = "2147483648";
-            providerOptionsDict["arena_extend_strategy"] = "kSameAsRequested";
-            providerOptionsDict["cudnn_conv_algo_search"] = "DEFAULT";
-            providerOptionsDict["do_copy_in_default_stream"] = "1";
-            providerOptionsDict["cudnn_conv_use_max_workspace"] = "1";
-            providerOptionsDict["cudnn_conv1d_pad_to_nc1d"] = "1";
-
-            cudaProviderOptions.UpdateOptions(providerOptionsDict);
-
-            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
+            // Set DML EP
+            SessionOptions sessionOptions = new SessionOptions();
+            //sessionOptions.LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_INFO;
+            sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
+            sessionOptions.AppendExecutionProvider_DML(1);
 
             // Create Inference Session
             var unetSession = new InferenceSession(modelPath, sessionOptions);

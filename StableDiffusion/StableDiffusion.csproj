@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.14.1" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
     <PackageReference Include="NumSharp" Version="0.30.0" />

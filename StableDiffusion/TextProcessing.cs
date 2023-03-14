@@ -61,10 +61,12 @@ namespace StableDiffusion
             var input_ids = TensorHelper.CreateTensor(tokenizedInput, new[] { 1, tokenizedInput.Count() });
 
             var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<int>("input_ids", input_ids) };
-
-            // Set CUDA EP
-            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider();
-
+            
+            // Set DML EP
+            SessionOptions sessionOptions = new SessionOptions();
+            //sessionOptions.LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_INFO;
+            sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
+            sessionOptions.AppendExecutionProvider_DML(1);
             var textEncoderOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_encoder\\model.onnx");
 
             var encodeSession = new InferenceSession(textEncoderOnnxPath, sessionOptions);

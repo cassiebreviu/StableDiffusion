@@ -11,9 +11,11 @@ namespace StableDiffusion
         {
             var vaeDecoderModelPath = Directory.GetCurrentDirectory().ToString() + ("\\vae_decoder\\model.onnx");
 
-            // Set CUDA EP
-            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider();
-
+            // Set DML EP
+            SessionOptions sessionOptions = new SessionOptions();
+            //sessionOptions.LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_INFO;
+            sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
+            sessionOptions.AppendExecutionProvider_DML(1);
             // Create an InferenceSession from the Model Path.
             var vaeDecodeSession = new InferenceSession(vaeDecoderModelPath, sessionOptions);
 
