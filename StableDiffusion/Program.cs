@@ -15,7 +15,7 @@ namespace StableDiffusion
             Console.WriteLine(prompt);
 
             // Number of denoising steps
-            var num_inference_steps = 10;
+            var num_inference_steps = 15;
             // Scale for classifier-free guidance
             var guidance_scale = 7.5;
             //num of images requested
