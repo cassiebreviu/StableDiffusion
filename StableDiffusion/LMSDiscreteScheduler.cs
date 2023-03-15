@@ -224,10 +224,10 @@ namespace StableDiffusion
 
             // 4. compute previous sample based on the derivative path
             // Reverse list of tensors this.derivatives
-            this.Derivatives = Enumerable.Reverse(this.Derivatives).ToList();
+            var revDerivatives = Enumerable.Reverse(this.Derivatives).ToList();
 
             // Create list of tuples from the lmsCoeffs and reversed derivatives
-            var lmsCoeffsAndDerivatives = lmsCoeffs.Zip(this.Derivatives, (lmsCoeff, derivative) => (lmsCoeff, derivative));
+            var lmsCoeffsAndDerivatives = lmsCoeffs.Zip(revDerivatives, (lmsCoeff, derivative) => (lmsCoeff, derivative));
 
             // Create tensor for product of lmscoeffs and derivatives
             var lmsDerProduct = new Tensor<float>[this.Derivatives.Count()];
