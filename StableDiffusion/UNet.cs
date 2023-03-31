@@ -64,10 +64,8 @@ namespace StableDiffusion
             return noisePred;
         }
 
-        public static SixLabors.ImageSharp.Image Inference(int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale, int batchSize, int height = 512, int width = 512)
+        public static SixLabors.ImageSharp.Image Inference(int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale, int batchSize, string UnetOnnxPath, string VaeDecoderOnnxPath, int height = 512, int width = 512)
         {
-            var modelPath = Directory.GetCurrentDirectory().ToString() + ("\\unet\\model.onnx");
-
             var scheduler = new LMSDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(numInferenceSteps);
 
@@ -98,7 +96,7 @@ namespace StableDiffusion
             var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
 
             // Create Inference Session
-            var unetSession = new InferenceSession(modelPath, sessionOptions);
+            var unetSession = new InferenceSession(UnetOnnxPath, sessionOptions);
 
             var input = new List<NamedOnnxValue>();
             for (int t = 0; t < timesteps.Length; t++)
@@ -142,7 +140,7 @@ namespace StableDiffusion
             var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
 
             // Decode image
-            var imageResultTensor = VaeDecoder.Decoder(decoderInput);
+            var imageResultTensor = VaeDecoder.Decoder(decoderInput, VaeDecoderOnnxPath);
 
             // TODO: Fix safety checker model
             //var isSafe = SafetyChecker.IsSafe(imageResultTensor);
