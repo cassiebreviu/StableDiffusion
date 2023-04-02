@@ -68,7 +68,7 @@ namespace StableDiffusion
         {
             var modelPath = Directory.GetCurrentDirectory().ToString() + ("\\unet\\model.onnx");
 
-            var scheduler = new LMSDiscreteScheduler();
+            SchedulerBase scheduler = new EulerAncestralDiscreteScheduler();//LMSDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(numInferenceSteps);
 
             //  If you use the same seed, you will get the same image result.

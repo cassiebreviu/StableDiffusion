@@ -19,7 +19,7 @@ namespace StableDiffusion
             return CreateTensor(data, dimensions);
         }
 
-        public static Tensor<float> MultipleTensorByFloat(float[] data, float value, int[] dimensions)
+        public static DenseTensor<float> MultipleTensorByFloat(float[] data, float value, int[] dimensions)
         {
             for (int i = 0; i < data.Length; i++)
             {
@@ -29,6 +29,11 @@ namespace StableDiffusion
             return CreateTensor(data, dimensions);
         }
 
+        public static DenseTensor<float> MultipleTensorByFloat(Tensor<float> data, float value)
+        {
+            return MultipleTensorByFloat(data.ToArray(), value, data.Dimensions.ToArray());
+        }
+
         public static DenseTensor<float> AddTensors(float[] sample, float[] sumTensor, int[] dimensions)
         {
             for(var i=0; i < sample.Length; i++)
@@ -36,6 +41,11 @@ namespace StableDiffusion
                 sample[i] = sample[i] + sumTensor[i];
             }
             return CreateTensor(sample, dimensions); ;
+        }
+
+        public static DenseTensor<float> AddTensors(Tensor<float> sample, Tensor<float> sumTensor)
+        {
+            return AddTensors(sample.ToArray(), sumTensor.ToArray(), sample.Dimensions.ToArray());
         }
 
         public static Tuple<Tensor<float>, Tensor<float>> SplitTensor(Tensor<float> tensorToSplit, int[] dimensions)
@@ -82,6 +92,20 @@ namespace StableDiffusion
         {
             data = data.Concat(data).ToArray();
             return CreateTensor(data, dimensions);
+        }
+
+        public static DenseTensor<float> SubtractTensors(float[] sample, float[] subTensor, int[] dimensions)
+        {
+            for (var i = 0; i < sample.Length; i++)
+            {
+                sample[i] = sample[i] - subTensor[i];
+            }
+            return CreateTensor(sample, dimensions);
+        }
+
+        public static DenseTensor<float> SubtractTensors(Tensor<float> sample, Tensor<float> subTensor)
+        {
+            return SubtractTensors(sample.ToArray(), subTensor.ToArray(), sample.Dimensions.ToArray());
         }
     }
 }
