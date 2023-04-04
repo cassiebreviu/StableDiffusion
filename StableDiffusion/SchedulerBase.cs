@@ -76,27 +76,7 @@ namespace StableDiffusion
             is_scale_input_called = true;
             return sample;
         }
-
-        // Line 157 of scheduling_lms_discrete.py from HuggingFace diffusers
-        public int[] SetTimesteps(int num_inference_steps)
-        {
-            double start = 0;
-            double stop = _numTrainTimesteps - 1;
-            double[] timesteps = np.linspace(start, stop, num_inference_steps).ToArray<double>();
-
-            this.Timesteps = timesteps.Select(x => (int)x).Reverse().ToList();
-
-            var sigmas = _alphasCumulativeProducts.Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
-            var range = np.arange((double)0, (double)(sigmas.Count)).ToArray<double>();
-            sigmas = Interpolate(timesteps, range, sigmas).ToList();
-            this.Sigmas = new DenseTensor<float>(sigmas.Count());
-            for (int i = 0; i < sigmas.Count(); i++)
-            {
-                this.Sigmas[i] = (float)sigmas[i];
-            }
-            return this.Timesteps.ToArray();
-
-        }
+        public abstract int[] SetTimesteps(int num_inference_steps);
 
         public abstract DenseTensor<float> Step(
                Tensor<float> modelOutput,

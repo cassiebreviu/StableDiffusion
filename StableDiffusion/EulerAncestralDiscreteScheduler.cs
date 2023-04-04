@@ -68,24 +68,26 @@ namespace StableDiffusion
             return np.array(betas).astype(np.float32);
         }
 
-        //public int[] SetTimesteps(int num_inference_steps)
-        //{
-        //    double start = 0;
-        //    double stop = num_train_timesteps - 1;
-        //    double[] timesteps = np.linspace(start, stop, num_inference_steps).ToArray<double>();
+        // Line 157 of scheduling_lms_discrete.py from HuggingFace diffusers
+        public override int[] SetTimesteps(int num_inference_steps)
+        {
+            double start = 0;
+            double stop = _numTrainTimesteps - 1;
+            double[] timesteps = np.linspace(start, stop, num_inference_steps).ToArray<double>();
 
-        //    this.Timesteps = timesteps.Select(x => (int)x).Reverse().ToList();
+            this.Timesteps = timesteps.Select(x => (int)x).Reverse().ToList();
 
-        //    var sigmas = alphas_cumprod.ToArray<float>().Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
-        //    var range = np.arange((double)0, (double)(sigmas.Count)).ToArray<double>();
-        //    sigmas = LMSDiscreteScheduler.Interpolate(timesteps, range, sigmas).ToList();
-        //    this.Sigmas = new DenseTensor<float>(sigmas.Count());
-        //    for (int i = 0; i < sigmas.Count(); i++)
-        //    {
-        //        this.Sigmas[i] = (float)sigmas[i];
-        //    }
-        //    return this.Timesteps.ToArray();
-        //}
+            var sigmas = _alphasCumulativeProducts.Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
+            var range = np.arange((double)0, (double)(sigmas.Count)).ToArray<double>();
+            sigmas = Interpolate(timesteps, range, sigmas).ToList();
+            this.Sigmas = new DenseTensor<float>(sigmas.Count());
+            for (int i = 0; i < sigmas.Count(); i++)
+            {
+                this.Sigmas[i] = (float)sigmas[i];
+            }
+            return this.Timesteps.ToArray();
+
+        }
 
         public override DenseTensor<float> Step(Tensor<float> modelOutput,
                int timestep,

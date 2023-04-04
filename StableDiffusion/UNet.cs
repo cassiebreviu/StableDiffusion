@@ -68,7 +68,8 @@ namespace StableDiffusion
         {
             var modelPath = Directory.GetCurrentDirectory().ToString() + ("\\unet\\model.onnx");
 
-            SchedulerBase scheduler = new EulerAncestralDiscreteScheduler();//LMSDiscreteScheduler();
+            SchedulerBase scheduler = new EulerAncestralDiscreteScheduler();
+            //SchedulerBase scheduler = new LMSDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(numInferenceSteps);
 
             //  If you use the same seed, you will get the same image result.
@@ -84,7 +85,7 @@ namespace StableDiffusion
             // Set DML EP
             SessionOptions sessionOptions = new SessionOptions();
             //sessionOptions.LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_INFO;
-            sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
+            //sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
             sessionOptions.AppendExecutionProvider_DML(1);
 
             // Create Inference Session
