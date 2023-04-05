@@ -19,6 +19,9 @@ namespace StableDiffusion
 
         }
 
+        public static Tensor<float> GenerateLatentSample(StableDiffusionConfig config, int seed, float initNoiseSigma) { 
+            return GenerateLatentSample(config.batchSize, config.height, config.width, seed, initNoiseSigma);
+        }
         public static Tensor<float> GenerateLatentSample(int batchSize, int height, int width, int seed, float initNoiseSigma)
         {
             var random = new Random(seed);
@@ -64,11 +67,11 @@ namespace StableDiffusion
             return noisePred;
         }
 
-        public static SixLabors.ImageSharp.Image Inference(int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale, int batchSize, string UnetOnnxPath, string VaeDecoderOnnxPath, int height = 512, int width = 512)
+        public static SixLabors.ImageSharp.Image Inference(DenseTensor<float> textEmbeddings, StableDiffusionConfig config)
         {
             var scheduler = new LMSDiscreteScheduler();
             //var scheduler = new EulerAncestralDiscreteScheduler();
-            var timesteps = scheduler.SetTimesteps(numInferenceSteps);
+            var timesteps = scheduler.SetTimesteps(config.numInferenceSteps);
 
             //  If you use the same seed, you will get the same image result.
             var seed = new Random().Next();
@@ -76,34 +79,19 @@ namespace StableDiffusion
             Console.WriteLine($"Seed generated: {seed}");
             // create latent tensor
 
-            var latents = GenerateLatentSample(batchSize, height, width, seed, scheduler.InitNoiseSigma);
+            var latents = GenerateLatentSample(config, seed, scheduler.InitNoiseSigma);
             // save latent as an image
             // VaeDecoder.ConvertToImage(latents, 64, 64, "latent.png");
 
-            // Set CUDA EP
-            var cudaProviderOptions = new OrtCUDAProviderOptions();
-            var providerOptionsDict = new Dictionary<string, string>();
-
-            providerOptionsDict["device_id"] = "0";
-            //providerOptionsDict["gpu_mem_limit"] = "2147483648";
-            providerOptionsDict["arena_extend_strategy"] = "kSameAsRequested";
-            providerOptionsDict["cudnn_conv_algo_search"] = "DEFAULT";
-            providerOptionsDict["do_copy_in_default_stream"] = "1";
-            providerOptionsDict["cudnn_conv_use_max_workspace"] = "1";
-            providerOptionsDict["cudnn_conv1d_pad_to_nc1d"] = "1";
-
-            cudaProviderOptions.UpdateOptions(providerOptionsDict);
-
-            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
-
+            var sessionOptions = config.GetSessionOptionsForEp();
             // Create Inference Session
-            var unetSession = new InferenceSession(UnetOnnxPath, sessionOptions);
+            var unetSession = new InferenceSession(config.UnetOnnxPath, sessionOptions);
 
             var input = new List<NamedOnnxValue>();
             for (int t = 0; t < timesteps.Length; t++)
             {
                 // torch.cat([latents] * 2)
-                var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, height / 8, width / 8 });
+                var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, config.height / 8, config.width / 8 });
 
                 // latent_model_input = scheduler.scale_model_input(latent_model_input, timestep = t)
                 latentModelInput = scheduler.ScaleInput(latentModelInput, timesteps[t]);
@@ -116,12 +104,12 @@ namespace StableDiffusion
                 var outputTensor = (output.ToList().First().Value as DenseTensor<float>);
 
                 // Split tensors from 2,4,64,64 to 1,4,64,64
-                var splitTensors = TensorHelper.SplitTensor(outputTensor, new[] { 1, 4, height / 8, width / 8 });
+                var splitTensors = TensorHelper.SplitTensor(outputTensor, new[] { 1, 4, config.height / 8, config.width / 8 });
                 var noisePred = splitTensors.Item1;
                 var noisePredText = splitTensors.Item2;
 
                 // Perform guidance
-                noisePred = performGuidance(noisePred, noisePredText, guidanceScale);
+                noisePred = performGuidance(noisePred, noisePredText, config.guidanceScale);
 
                 // Uncomment this to see image at each inference step. This will greatly reduce speed.
                 //var noisePredInterim = TensorHelper.MultipleTensorByFloat(noisePred.ToArray(), (1.0f / 0.18215f), noisePred.Dimensions.ToArray());
@@ -141,7 +129,7 @@ namespace StableDiffusion
             var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
 
             // Decode image
-            var imageResultTensor = VaeDecoder.Decoder(decoderInput, VaeDecoderOnnxPath);
+            var imageResultTensor = VaeDecoder.Decoder(decoderInput, config.VaeDecoderOnnxPath);
 
             // TODO: Fix safety checker model
             //var isSafe = SafetyChecker.IsSafe(imageResultTensor);

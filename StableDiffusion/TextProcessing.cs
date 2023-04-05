@@ -5,14 +5,14 @@ namespace StableDiffusion
 {
     public static class TextProcessing
     {
-        public static int[] TokenizeText(string text, string OrtExtensionsPath, string TokenizerOnnxPath)
+        public static int[] TokenizeText(string text, StableDiffusionConfig config)
         {
             // Create session options for custom op of extensions
             var sessionOptions = new SessionOptions();
-            sessionOptions.RegisterCustomOpLibraryV2(OrtExtensionsPath, out var libraryHandle);
+            sessionOptions.RegisterCustomOpLibraryV2(config.OrtExtensionsPath, out var libraryHandle);
             
             // Create an InferenceSession from the onnx clip tokenizer.
-            var tokenizeSession = new InferenceSession(TokenizerOnnxPath, sessionOptions);
+            var tokenizeSession = new InferenceSession(config.TokenizerOnnxPath, sessionOptions);
             var inputTensor = new DenseTensor<string>(new string[] { text }, new int[] { 1 });
             var inputString = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<string>("string_input", inputTensor) };
             // Run session and send the input data in to get inference output. 
@@ -50,7 +50,7 @@ namespace StableDiffusion
             return inputIds.ToArray();
         }
 
-        public static DenseTensor<float> TextEncoder(int[] tokenizedInput, string TextEncoderOnnxPath)
+        public static DenseTensor<float> TextEncoder(int[] tokenizedInput, StableDiffusionConfig config)
         {
             // Create input tensor.
             var input_ids = TensorHelper.CreateTensor(tokenizedInput, new[] { 1, tokenizedInput.Count() });
@@ -58,9 +58,9 @@ namespace StableDiffusion
             var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<int>("input_ids", input_ids) };
 
             // Set CUDA EP
-            var sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider();
+            var sessionOptions = config.GetSessionOptionsForEp();
 
-            var encodeSession = new InferenceSession(TextEncoderOnnxPath, sessionOptions);
+            var encodeSession = new InferenceSession(config.TextEncoderOnnxPath, sessionOptions);
             // Run inference.
             var encoded = encodeSession.Run(input);
 
