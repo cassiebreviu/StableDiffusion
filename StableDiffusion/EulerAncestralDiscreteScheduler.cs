@@ -5,9 +5,7 @@ namespace StableDiffusion
 {
     public class EulerAncestralDiscreteScheduler : SchedulerBase
     {
-        public static readonly int order = 1;
         private readonly string prediction_Type;
-        public NDArray betas, alphas, sigmas;
         public override float InitNoiseSigma { get; set; }
         public int num_inference_steps;
         public override List<int> Timesteps { get; set; }
@@ -16,57 +14,48 @@ namespace StableDiffusion
         //[RegisterToConfig]
         public EulerAncestralDiscreteScheduler(
             int num_train_timesteps = 1000,
-            float beta_start = 0.0001f,
-            float beta_end = 0.02f,
-            string beta_schedule = "linear",
-            Array trained_betas = null,
+            float beta_start = 0.00085f,
+            float beta_end = 0.012f,
+            string beta_schedule = "scaled_linear",
+            List<float> trained_betas = null,
             string prediction_type = "epsilon"
         ) : base(num_train_timesteps)
         {
-            if (trained_betas != null)
-                betas = np.array(trained_betas).astype(np.float32);
-            else if (beta_schedule == "linear")
-                betas = np.linspace(beta_start, beta_end, num_train_timesteps);
-            else if (beta_schedule == "scaled_linear")
-                betas = np.power(np.linspace(beta_start, beta_end, num_train_timesteps), 2);
-            else if (beta_schedule == "squaredcos_cap_v2")
-                betas = BetasForAlphaBar(num_train_timesteps);
-            else
-                throw new NotImplementedException($"{beta_schedule} does is not implemented for {this.GetType()}");
-
-            alphas = 1.0f - betas;
-            NDArray alphas_cumprod = alphas.CumProd();// np.cumprod(alphas, axis: 0);//TODO: axis is borken
-            _alphasCumulativeProducts = new List<float>(alphas_cumprod.ToArray<float>());
-            NDArray sigmas = ((1 - alphas_cumprod) / alphas_cumprod).Sqrt();
-            sigmas = np.concatenate(new[] { sigmas.Reverse(), np.array(0.0f) }).astype(np.float32);
-            this.sigmas = sigmas;
-
-            // standard deviation of the initial noise distribution
-            InitNoiseSigma = sigmas.max();
-
-            // setable values
-            num_inference_steps = 0;
-            var timesteps = np.linspace(0, num_train_timesteps - 1, num_train_timesteps).Reverse().ToArray<float>().Select(f => (int)f).ToList();//.Copy()
-            this.Timesteps = timesteps;
-            prediction_Type = prediction_type;
-        }
-
-        public static NDArray BetasForAlphaBar(int numDiffusionTimesteps, float maxBeta = 0.999f)
-        {
-            float AlphaBar(int timeStep)
-            {
-                return (float)MathF.Pow(MathF.Cos((timeStep + 0.008f) / 1.008f * MathF.PI / 2), 2);
-            }
-
+            var alphas = new List<float>();
             var betas = new List<float>();
-            for (int i = 0; i < numDiffusionTimesteps; i++)
+            prediction_Type = prediction_type;
+
+            if (trained_betas != null)
             {
-                float t1 = (float)i / numDiffusionTimesteps;
-                float t2 = (float)(i + 1) / numDiffusionTimesteps;
-                betas.Add(Math.Min(1 - AlphaBar((int)t2) / AlphaBar((int)t1), maxBeta));
+                betas = trained_betas;
             }
-            return np.array(betas).astype(np.float32);
+            else if (beta_schedule == "linear")
+            {
+                betas = Enumerable.Range(0, num_train_timesteps).Select(i => beta_start + (beta_end - beta_start) * i / (num_train_timesteps - 1)).ToList();
+            }
+            else if (beta_schedule == "scaled_linear")
+            {
+                var start = (float)Math.Sqrt(beta_start);
+                var end = (float)Math.Sqrt(beta_end);
+                betas = np.linspace(start, end, num_train_timesteps).ToArray<float>().Select(x => x * x).ToList();
+
+            }
+            else
+            {
+                throw new Exception("beta_schedule must be one of 'linear' or 'scaled_linear'");
+            }
+
+            alphas = betas.Select(beta => 1 - beta).ToList();
+
+            this._alphasCumulativeProducts = alphas.Select((alpha, i) => alphas.Take(i + 1).Aggregate((a, b) => a * b)).ToList();
+            // Create sigmas as a list and reverse it
+            var sigmas = _alphasCumulativeProducts.Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
+
+            // standard deviation of the initial noise distrubution
+            this.InitNoiseSigma = (float)sigmas.Max();
         }
+
+
 
         // Line 157 of scheduling_lms_discrete.py from HuggingFace diffusers
         public override int[] SetTimesteps(int num_inference_steps)
@@ -80,6 +69,7 @@ namespace StableDiffusion
             var sigmas = _alphasCumulativeProducts.Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
             var range = np.arange((double)0, (double)(sigmas.Count)).ToArray<double>();
             sigmas = Interpolate(timesteps, range, sigmas).ToList();
+            this.InitNoiseSigma = (float)sigmas.Max();
             this.Sigmas = new DenseTensor<float>(sigmas.Count());
             for (int i = 0; i < sigmas.Count(); i++)
             {
@@ -123,11 +113,9 @@ namespace StableDiffusion
             Tensor<float> predOriginalSample = null;
             if (this.prediction_Type == "epsilon")
             {
-                predOriginalSample = TensorHelper.SubtractTensors(sample.ToArray(),
-                    TensorHelper.MultipleTensorByFloat(modelOutput.ToArray(),
-                        sigma,
-                        modelOutput.Dimensions.ToArray())
-                    .ToArray(), sample.Dimensions.ToArray());// sample - sigma * modelOutput;
+                //  pred_original_sample = sample - sigma * model_output
+                var sigmaProduct = TensorHelper.MultipleTensorByFloat(modelOutput, sigma);
+                predOriginalSample = TensorHelper.SubtractTensors(sample, sigmaProduct);
             }
             else if (this.prediction_Type == "v_prediction")
             {
@@ -146,43 +134,105 @@ namespace StableDiffusion
                 );
             }
 
-            float sigmaFrom = this.sigmas[stepIndex];
-            float sigmaTo = this.sigmas[stepIndex + 1];
-            float sigmaUp = MathF.Pow(sigmaTo * sigmaTo * (sigmaFrom * sigmaFrom - sigmaTo * sigmaTo) / sigmaFrom * sigmaFrom, 0.5f);
-            float sigmaDown = MathF.Pow(sigmaTo * sigmaTo - sigmaUp * sigmaUp, 0.5f);
+            float sigmaFrom = this.Sigmas[stepIndex];
+            float sigmaTo = this.Sigmas[stepIndex + 1];
+
+            // sigma_up = (sigma_to**2 * (sigma_from * *2 - sigma_to * *2) / sigma_from * *2) * *0.5
+
+            var sigmaFromLessSigmaTo = (MathF.Pow(sigmaFrom, 2) - MathF.Pow(sigmaTo, 2));
+            var sigmaUpResult = (MathF.Pow(sigmaTo, 2) * sigmaFromLessSigmaTo) / MathF.Pow(sigmaFrom, 2);
+
+            var sigmaUp = 0f;
+
+            // handle result if negative
+            if (sigmaUpResult < 0)
+            {
+                sigmaUpResult = MathF.Abs(sigmaUpResult);
+                sigmaUp = -MathF.Pow(sigmaUpResult, 0.5f);
+            }
+            else
+            {
+                sigmaUp = MathF.Pow(sigmaUpResult, 0.5f);
+            }
+            var sigmaDown = 0f;
+            var sigmaDownResult = (MathF.Pow(sigmaTo, 2) - MathF.Pow(sigmaUp, 2));
+            // handle result if negative
+            if (sigmaDownResult < 0)
+            {
+                sigmaDownResult = MathF.Abs(sigmaDownResult);
+                sigmaDown = -MathF.Pow(sigmaDownResult, 0.5f);
+            }
+            else
+            {
+                sigmaDown = MathF.Pow(sigmaDownResult, 0.5f);
+            }
 
             // 2. Convert to an ODE derivative
-            DenseTensor<float> derivative = TensorHelper.MultipleTensorByFloat(
-                TensorHelper.SubtractTensors(sample, predOriginalSample),
-                1f / sigma);// (sample - predOriginalSample) / sigma;
+            var sampleMinusPredOriginalSample = TensorHelper.SubtractTensors(sample, predOriginalSample);
+            DenseTensor<float> derivative = TensorHelper.DivideTensorByFloat(sampleMinusPredOriginalSample.ToArray(), sigma, predOriginalSample.Dimensions.ToArray());// (sample - predOriginalSample) / sigma;
 
             float dt = sigmaDown - sigma;
 
-            DenseTensor<float> prevSample = TensorHelper.AddTensors(sample,
-                TensorHelper.MultipleTensorByFloat(derivative, dt));// sample + derivative * dt;
+            var DerivativeDtProduct = TensorHelper.MultipleTensorByFloat(derivative, dt);
+            DenseTensor<float> prevSample = TensorHelper.AddTensors(sample, DerivativeDtProduct);// sample + derivative * dt;
 
             //var noise = generator == null ? np.random.randn(modelOutput.shape) : np.random.RandomState(generator).randn(modelOutput.shape);
             var noise = GetRandomTensor(prevSample.Dimensions);
 
-            prevSample = TensorHelper.AddTensors(prevSample,
-                TensorHelper.MultipleTensorByFloat(noise, sigmaUp));// prevSample + noise * sigmaUp;
+            var noiseSigmaUpProduct = TensorHelper.MultipleTensorByFloat(noise, (float)sigmaUp);
+            prevSample = TensorHelper.AddTensors(prevSample, noiseSigmaUpProduct);// prevSample + noise * sigmaUp;
 
             //if (!returnDict)
             //{
             //    return prevSample;
             //}
 
-            return prevSample;// new EulerAncestralDiscreteSchedulerOutput(prevSample, predOriginalSample);
+            return prevSample;
         }
 
-        public DenseTensor<float> GetRandomTensor(ReadOnlySpan<int> dimensions)
+
+        public static NDArray BetasForAlphaBar(int numDiffusionTimesteps, float maxBeta = 0.999f)
         {
-            float[] data = new float[dimensions.ToArray().Aggregate((d1, d2) => d1 * d2)];
-            for (int i = 0; i < data.Length; i++)
+            float AlphaBar(int timeStep)
             {
-                data[i] = Random.Shared.NextSingle();
+                return (float)MathF.Pow(MathF.Cos((timeStep + 0.008f) / 1.008f * MathF.PI / 2), 2);
             }
-            return new DenseTensor<float>(data, dimensions);
+
+            var betas = new List<float>();
+            for (int i = 0; i < numDiffusionTimesteps; i++)
+            {
+                float t1 = (float)i / numDiffusionTimesteps;
+                float t2 = (float)(i + 1) / numDiffusionTimesteps;
+                betas.Add(Math.Min(1 - AlphaBar((int)t2) / AlphaBar((int)t1), maxBeta));
+            }
+            return np.array(betas).astype(np.float32);
+        }
+
+        public Tensor<float> GetRandomTensor(ReadOnlySpan<int> dimensions)
+        {
+            var random = new Random();
+            var latents = new DenseTensor<float>(dimensions);
+            var latentsArray = latents.ToArray();
+
+            for (int i = 0; i < latentsArray.Length; i++)
+            {
+                // Generate a random number from a normal distribution with mean 0 and variance 1
+                var u1 = random.NextDouble(); // Uniform(0,1) random number
+                var u2 = random.NextDouble(); // Uniform(0,1) random number
+                var radius = Math.Sqrt(-2.0 * Math.Log(u1)); // Radius of polar coordinates
+                var theta = 2.0 * Math.PI * u2; // Angle of polar coordinates
+                var standardNormalRand = radius * Math.Cos(theta); // Standard normal random number
+
+                // add noise to latents with * scheduler.init_noise_sigma
+                // generate randoms that are negative and positive
+                //latentsArray[i] = (float)standardNormalRand * this.InitNoiseSigma;
+                latentsArray[i] = (float)standardNormalRand;
+            }
+
+            latents = TensorHelper.CreateTensor(latentsArray, latents.Dimensions.ToArray());
+
+            return latents;
+
         }
     }
 }
