@@ -19,7 +19,7 @@ namespace StableDiffusion
             return CreateTensor(data, dimensions);
         }
 
-        public static Tensor<float> MultipleTensorByFloat(float[] data, float value, int[] dimensions)
+        public static DenseTensor<float> MultipleTensorByFloat(float[] data, float value, int[] dimensions)
         {
             for (int i = 0; i < data.Length; i++)
             {
@@ -29,6 +29,11 @@ namespace StableDiffusion
             return CreateTensor(data, dimensions);
         }
 
+        public static DenseTensor<float> MultipleTensorByFloat(Tensor<float> data, float value)
+        {
+            return MultipleTensorByFloat(data.ToArray(), value, data.Dimensions.ToArray());
+        }
+
         public static DenseTensor<float> AddTensors(float[] sample, float[] sumTensor, int[] dimensions)
         {
             for(var i=0; i < sample.Length; i++)
@@ -36,6 +41,11 @@ namespace StableDiffusion
                 sample[i] = sample[i] + sumTensor[i];
             }
             return CreateTensor(sample, dimensions); ;
+        }
+
+        public static DenseTensor<float> AddTensors(Tensor<float> sample, Tensor<float> sumTensor)
+        {
+            return AddTensors(sample.ToArray(), sumTensor.ToArray(), sample.Dimensions.ToArray());
         }
 
         public static Tuple<Tensor<float>, Tensor<float>> SplitTensor(Tensor<float> tensorToSplit, int[] dimensions)
@@ -82,6 +92,43 @@ namespace StableDiffusion
         {
             data = data.Concat(data).ToArray();
             return CreateTensor(data, dimensions);
+        }
+
+        public static DenseTensor<float> SubtractTensors(float[] sample, float[] subTensor, int[] dimensions)
+        {
+            for (var i = 0; i < sample.Length; i++)
+            {
+                sample[i] = sample[i] - subTensor[i];
+            }
+            return CreateTensor(sample, dimensions);
+        }
+
+        public static DenseTensor<float> SubtractTensors(Tensor<float> sample, Tensor<float> subTensor)
+        {
+            return SubtractTensors(sample.ToArray(), subTensor.ToArray(), sample.Dimensions.ToArray());
+        }
+
+        public static Tensor<float> GetRandomTensor(ReadOnlySpan<int> dimensions)
+        {
+            var random = new Random();
+            var latents = new DenseTensor<float>(dimensions);
+            var latentsArray = latents.ToArray();
+
+            for (int i = 0; i < latentsArray.Length; i++)
+            {
+                // Generate a random number from a normal distribution with mean 0 and variance 1
+                var u1 = random.NextDouble(); // Uniform(0,1) random number
+                var u2 = random.NextDouble(); // Uniform(0,1) random number
+                var radius = Math.Sqrt(-2.0 * Math.Log(u1)); // Radius of polar coordinates
+                var theta = 2.0 * Math.PI * u2; // Angle of polar coordinates
+                var standardNormalRand = radius * Math.Cos(theta); // Standard normal random number
+                latentsArray[i] = (float)standardNormalRand;
+            }
+
+            latents = TensorHelper.CreateTensor(latentsArray, latents.Dimensions.ToArray());
+
+            return latents;
+
         }
     }
 }

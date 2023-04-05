@@ -5,11 +5,11 @@ namespace StableDiffusion
 {
     public static class SafetyChecker
     {
-        public static int IsSafe(Tensor<float> resultImage)
+        public static int IsSafe(Tensor<float> resultImage, StableDiffusionConfig config)
         {
 
-            var safetyModelPath = Directory.GetCurrentDirectory().ToString() + ("\\safety_checker\\model.onnx");
-            var safetySession = new InferenceSession(safetyModelPath);
+            var sessionOptions = config.GetSessionOptionsForEp();
+            var safetySession = new InferenceSession(config.SafetyModelPath, sessionOptions);
 
             var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("clip_input", resultImage)};
             

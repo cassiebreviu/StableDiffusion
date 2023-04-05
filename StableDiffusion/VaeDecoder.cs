@@ -7,17 +7,10 @@ namespace StableDiffusion
 {
     public static class VaeDecoder
     {
-        public static Tensor<float> Decoder(List<NamedOnnxValue> input)
+        public static Tensor<float> Decoder(List<NamedOnnxValue> input, string VaeDecoderOnnxPath)
         {
-            var vaeDecoderModelPath = Directory.GetCurrentDirectory().ToString() + ("\\vae_decoder\\model.onnx");
-
-            // Set DML EP
-            SessionOptions sessionOptions = new SessionOptions();
-            //sessionOptions.LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_INFO;
-            sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
-            sessionOptions.AppendExecutionProvider_DML(1);
             // Create an InferenceSession from the Model Path.
-            var vaeDecodeSession = new InferenceSession(vaeDecoderModelPath, sessionOptions);
+            var vaeDecodeSession = new InferenceSession(VaeDecoderOnnxPath);
 
            // Run session and send the input data in to get inference output. 
             var output = vaeDecodeSession.Run(input);
