@@ -67,6 +67,7 @@ namespace StableDiffusion
         public static SixLabors.ImageSharp.Image Inference(int numInferenceSteps, DenseTensor<float> textEmbeddings, double guidanceScale, int batchSize, string UnetOnnxPath, string VaeDecoderOnnxPath, int height = 512, int width = 512)
         {
             var scheduler = new LMSDiscreteScheduler();
+            //var scheduler = new EulerAncestralDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(numInferenceSteps);
 
             //  If you use the same seed, you will get the same image result.
