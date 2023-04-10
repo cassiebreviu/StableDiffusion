@@ -14,7 +14,7 @@ namespace StableDiffusion
         }
         // default props
         public int NumInferenceSteps = 15;
-        public ExecutionProvider ExeutionProviderTarget = ExecutionProvider.Cuda;
+        public ExecutionProvider ExecutionProviderTarget = ExecutionProvider.Cuda;
         public double GuidanceScale = 7.5;
         public int BatchSize = 1;
         public int Height = 512;
@@ -63,7 +63,7 @@ namespace StableDiffusion
             var sessionOptions = new SessionOptions();
 
 
-            switch (this.ExeutionProviderTarget)
+            switch (this.ExecutionProviderTarget)
             {
                 case ExecutionProvider.DirectML:
                     sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
