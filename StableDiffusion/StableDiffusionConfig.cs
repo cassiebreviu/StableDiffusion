@@ -13,12 +13,12 @@ namespace StableDiffusion
             //OpenVINO = 4,
         }
         // default props
-        public int numInferenceSteps = 15;
+        public int NumInferenceSteps = 15;
         public ExecutionProvider ExeutionProviderTarget = ExecutionProvider.Cuda;
-        public double guidanceScale = 7.5;
-        public int batchSize = 1;
-        public int height = 512;
-        public int width = 512;
+        public double GuidanceScale = 7.5;
+        public int BatchSize = 1;
+        public int Height = 512;
+        public int Width = 512;
         public int DeviceId = 0;
 
 
