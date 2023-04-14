@@ -17,11 +17,11 @@ namespace StableDiffusion
             var config = new StableDiffusionConfig
                 {
                 //num of images requested
-                batchSize = 1,
+                BatchSize = 1,
                 // Number of denoising steps
-                numInferenceSteps = 15,
+                NumInferenceSteps = 15,
                 // Scale for classifier-free guidance
-                guidanceScale = 7.5,
+                GuidanceScale = 7.5,
                 // Set your preferred Execution Provider. Currently (GPU, DirectML, CPU) are supported in this project.
                 // ONNX Runtime supports many more than this. Learn more here: https://onnxruntime.ai/docs/execution-providers/
                 // The config is defaulted to CUDA. You can override it here if needed.
