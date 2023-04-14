@@ -1,5 +1,5 @@
 ﻿using Microsoft.ML.OnnxRuntime.Tensors;
-using static StableDiffusion.StableDiffusionConfig;
+using OnnxRuntime.ML.StableDiffusion;
 
 namespace StableDiffusion
 {
@@ -26,14 +26,18 @@ namespace StableDiffusion
                 // ONNX Runtime supports many more than this. Learn more here: https://onnxruntime.ai/docs/execution-providers/
                 // The config is defaulted to CUDA. You can override it here if needed.
                 // To use DirectML EP intall the Microsoft.ML.OnnxRuntime.DirectML and uninstall Microsoft.ML.OnnxRuntime.GPU
-                ExeutionProviderTarget = ExecutionProvider.DirectML,
-                // Set GPI Device ID
+                ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.DirectML,
+                // Set GPU Device ID.
                 DeviceId = 1
                 };
 
-            // For some editors the dynamic path doesnt work. If you need to change to a static path
-            // update the useStaticPath to true and update the paths below.
-            config.SetModelPaths();
+            // Update paths to your models
+            config.TokenizerOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_tokenizer\custom_op_cliptok.onnx";
+            config.TextEncoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_encoder\model.onnx";
+            config.UnetOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\unet\model.onnx";
+            config.VaeDecoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\vae_decoder\model.onnx";
+            config.SafetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\models\safety_checker\model.onnx";
+            config.OutputImagePath = "./sample.png";
 
 
             // Load the tokenizer and text encoder to tokenize and encode the text.

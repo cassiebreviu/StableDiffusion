@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime.Tensors;
 
-namespace StableDiffusion
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public class TensorHelper
     {

@@ -1,8 +1,7 @@
-﻿using Microsoft.ML.Data;
-using Microsoft.ML.OnnxRuntime;
+﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
-namespace StableDiffusion
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public class UNet
     { 
@@ -20,7 +19,7 @@ namespace StableDiffusion
         }
 
         public static Tensor<float> GenerateLatentSample(StableDiffusionConfig config, int seed, float initNoiseSigma) { 
-            return GenerateLatentSample(config.batchSize, config.height, config.width, seed, initNoiseSigma);
+            return GenerateLatentSample(config.BatchSize, config.Height, config.Width, seed, initNoiseSigma);
         }
         public static Tensor<float> GenerateLatentSample(int batchSize, int height, int width, int seed, float initNoiseSigma)
         {
@@ -71,7 +70,7 @@ namespace StableDiffusion
         {
             var scheduler = new LMSDiscreteScheduler();
             //var scheduler = new EulerAncestralDiscreteScheduler();
-            var timesteps = scheduler.SetTimesteps(config.numInferenceSteps);
+            var timesteps = scheduler.SetTimesteps(config.NumInferenceSteps);
 
             //  If you use the same seed, you will get the same image result.
             var seed = new Random().Next();
@@ -91,7 +90,7 @@ namespace StableDiffusion
             for (int t = 0; t < timesteps.Length; t++)
             {
                 // torch.cat([latents] * 2)
-                var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, config.height / 8, config.width / 8 });
+                var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, config.Height / 8, config.Width / 8 });
 
                 // latent_model_input = scheduler.scale_model_input(latent_model_input, timestep = t)
                 latentModelInput = scheduler.ScaleInput(latentModelInput, timesteps[t]);
@@ -104,12 +103,12 @@ namespace StableDiffusion
                 var outputTensor = (output.ToList().First().Value as DenseTensor<float>);
 
                 // Split tensors from 2,4,64,64 to 1,4,64,64
-                var splitTensors = TensorHelper.SplitTensor(outputTensor, new[] { 1, 4, config.height / 8, config.width / 8 });
+                var splitTensors = TensorHelper.SplitTensor(outputTensor, new[] { 1, 4, config.Height / 8, config.Width / 8 });
                 var noisePred = splitTensors.Item1;
                 var noisePredText = splitTensors.Item2;
 
                 // Perform guidance
-                noisePred = performGuidance(noisePred, noisePredText, config.guidanceScale);
+                noisePred = performGuidance(noisePred, noisePredText, config.GuidanceScale);
 
                 // Uncomment this to see image at each inference step. This will greatly reduce speed.
                 //var noisePredInterim = TensorHelper.MultipleTensorByFloat(noisePred.ToArray(), (1.0f / 0.18215f), noisePred.Dimensions.ToArray());
@@ -136,7 +135,7 @@ namespace StableDiffusion
 
             ////if (isSafe == 1)
             //{ 
-                var image = VaeDecoder.ConvertToImage(imageResultTensor);
+                var image = VaeDecoder.ConvertToImage(imageResultTensor, config);
                 return image;
             //}
 

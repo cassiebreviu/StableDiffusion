@@ -3,7 +3,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 
-namespace StableDiffusion
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public static class VaeDecoder
     {
@@ -20,7 +20,7 @@ namespace StableDiffusion
         }
 
         // create method to convert float array to an image with imagesharp
-        public static Image<Rgba32> ConvertToImage(Tensor<float> output, int width = 512, int height = 512, string imageName = "sample")
+        public static Image<Rgba32> ConvertToImage(Tensor<float> output, StableDiffusionConfig config, int width = 512, int height = 512)
         {
             var result = new Image<Rgba32>(width, height);
 
@@ -35,7 +35,7 @@ namespace StableDiffusion
                     );
                 }
             }
-            result.Save($@"C:/code/StableDiffusion/{imageName}.png");
+            result.Save(config.OutputImagePath);
 
             return result;
         }

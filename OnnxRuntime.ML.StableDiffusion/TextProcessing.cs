@@ -1,7 +1,7 @@
 ﻿using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.ML.OnnxRuntime;
 
-namespace StableDiffusion
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public static class TextProcessing
     {
