@@ -20,23 +20,25 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Cassie Breviu</Authors>
-		<Version>1.1.4</Version>
+		<Version>1.1.5</Version>
 		<PackageOutputPath>C:\code\localnuget</PackageOutputPath>
+		<Description>This is an unoffical Onnx Runtime SDK style NuGet for implementing Stable Diffusion logic into your application.</Description>
+		<PackageProjectUrl>https://github.com/cassiebreviu/StableDiffusion</PackageProjectUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
 		<PackageReference Include="NumSharp" Version="0.30.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
-		<PackageReference Include="Microsoft.ML" Version="2.0.1"/>
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1"/>
+		<PackageReference Include="Microsoft.ML" Version="2.0.1" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="ortextensions.dll" GeneratePathProperty="true">
 			<Pack>true</Pack>
-			<PackagePath>contentFiles;content</PackagePath>
+			<PackagePath>contentFiles;content;lib;</PackagePath>
 			<IncludeInPackage>true</IncludeInPackage>
 			<CopyToOutput>true</CopyToOutput>
 			<BuildAction>Content</BuildAction>
