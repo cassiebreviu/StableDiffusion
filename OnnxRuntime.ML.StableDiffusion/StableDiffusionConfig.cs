@@ -1,16 +1,15 @@
 ﻿using Microsoft.ML.OnnxRuntime;
-using System.Runtime.CompilerServices;
 
-namespace StableDiffusion
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public class StableDiffusionConfig
     {
+        
         public enum ExecutionProvider
         {
             DirectML = 0,
             Cuda = 1,
             Cpu = 2,
-            //OpenVINO = 4,
         }
         // default props
         public int NumInferenceSteps = 15;
@@ -22,41 +21,13 @@ namespace StableDiffusion
         public int DeviceId = 0;
 
 
-        public string OrtExtensionsPath = "";
+        public string OrtExtensionsPath = "ortextensions.dll";
         public string TokenizerOnnxPath = "";
         public string TextEncoderOnnxPath = "";
         public string UnetOnnxPath = "";
         public string VaeDecoderOnnxPath = "";
         public string SafetyModelPath = "";
-        
-
-        public void SetModelPaths(bool useStaticPath = false)
-        {
-            // For some editors the dynamic path doesnt work. If you need to change to a static path
-            // update the useStaticPath to true and update the paths below.
-
-            if (!useStaticPath)
-            {
-                Directory.SetCurrentDirectory(@"..\..\..\..");
-                OrtExtensionsPath = Directory.GetCurrentDirectory().ToString() + ("\\ortextensions.dll");
-                TokenizerOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_tokenizer\\custom_op_cliptok.onnx");
-                TextEncoderOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\text_encoder\\model.onnx");
-                UnetOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\unet\\model.onnx");
-                VaeDecoderOnnxPath = Directory.GetCurrentDirectory().ToString() + ("\\vae_decoder\\model.onnx");
-                SafetyModelPath = Directory.GetCurrentDirectory().ToString() + ("\\safety_checker\\model.onnx");
-            }
-            else
-            {
-                OrtExtensionsPath = "ortextensions.dll";
-                TokenizerOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\text_tokenizer\custom_op_cliptok.onnx";
-                TextEncoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\text_encoder\model.onnx";
-                UnetOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\unet\model.onnx";
-                VaeDecoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\vae_decoder\model.onnx";
-                SafetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\safety_checker\model.onnx";
-            }
-
-        }
-
+        public string OutputImagePath = @"./sample.png";
 
         public SessionOptions GetSessionOptionsForEp()
         {
@@ -86,6 +57,9 @@ namespace StableDiffusion
             }
 
         }
+
+
+
     }
 
 

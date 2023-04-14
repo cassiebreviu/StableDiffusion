@@ -1,8 +1,7 @@
-﻿using Microsoft.ML.Data;
-using Microsoft.ML.OnnxRuntime;
+﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
-namespace StableDiffusion
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public class UNet
     { 
@@ -136,7 +135,7 @@ namespace StableDiffusion
 
             ////if (isSafe == 1)
             //{ 
-                var image = VaeDecoder.ConvertToImage(imageResultTensor);
+                var image = VaeDecoder.ConvertToImage(imageResultTensor, config);
                 return image;
             //}
 

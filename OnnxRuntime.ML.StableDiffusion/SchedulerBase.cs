@@ -1,7 +1,7 @@
 ﻿using Microsoft.ML.OnnxRuntime.Tensors;
 using NumSharp;
-using StableDiffusion;
-namespace StableDiffusion
+
+namespace OnnxRuntime.ML.StableDiffusion
 {
     public abstract class SchedulerBase
     {
