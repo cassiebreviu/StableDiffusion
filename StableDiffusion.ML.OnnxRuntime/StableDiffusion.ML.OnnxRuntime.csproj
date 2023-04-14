@@ -20,7 +20,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Cassie Breviu</Authors>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<PackageOutputPath>C:\code\localnuget</PackageOutputPath>
 		<Description>A package with the logic for implementing Stable Diffusion Text-to-Image generative AI capabilities into your application leveraging OnnxRuntime.</Description>
 		<PackageProjectUrl>https://github.com/cassiebreviu/StableDiffusion</PackageProjectUrl>

@@ -1,5 +1,4 @@
-﻿using Microsoft.ML.OnnxRuntime.Tensors;
-using OnnxRuntime.ML.StableDiffusion;
+﻿using StableDiffusion.ML.OnnxRuntime;
 
 namespace StableDiffusion
 {
