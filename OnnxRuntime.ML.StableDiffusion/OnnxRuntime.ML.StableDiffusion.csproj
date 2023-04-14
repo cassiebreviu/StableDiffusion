@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
-	  <Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
-	  <Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
-	  <Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
+		<Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
+		<Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
+		<Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+		<Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
-	  <Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
-	  <Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
-	  <Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
+		<Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
+		<Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
+		<Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+		<Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -34,7 +34,19 @@
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
 	</ItemGroup>
-
+	<ItemGroup>
+		<Content Include="ortextensions.dll" GeneratePathProperty="true">
+			<Pack>true</Pack>
+			<PackagePath>contentFiles;content;lib;</PackagePath>
+			<IncludeInPackage>true</IncludeInPackage>
+			<CopyToOutput>true</CopyToOutput>
+			<BuildAction>Content</BuildAction>
+			<copyToOutput>true</copyToOutput>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
 	<ItemGroup>
 		<Content Include="ortextensions.dll">
 			<Pack>true</Pack>
