@@ -47,7 +47,7 @@ namespace StableDiffusion
             }
             else
             {
-                // Get exectiion path and append output image name
+                // Get path and append output image name
                 var path = Path.Combine(Directory.GetCurrentDirectory(), config.OutputImagePath);
                 Console.WriteLine("Image saved to: " + path);
             }
