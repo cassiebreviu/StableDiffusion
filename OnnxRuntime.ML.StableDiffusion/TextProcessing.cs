@@ -5,6 +5,26 @@ namespace OnnxRuntime.ML.StableDiffusion
 {
     public static class TextProcessing
     {
+        public static DenseTensor<float> PreprocessText(String prompt, StableDiffusionConfig config)
+        {
+            // Load the tokenizer and text encoder to tokenize and encode the text.
+            var textTokenized = TokenizeText(prompt, config);
+            var textPromptEmbeddings = TextEncoder(textTokenized, config).ToArray();
+
+            // Create uncond_input of blank tokens
+            var uncondInputTokens = CreateUncondInput();
+            var uncondEmbedding = TextEncoder(uncondInputTokens, config).ToArray();
+
+            // Concant textEmeddings and uncondEmbedding
+            DenseTensor<float> textEmbeddings = new DenseTensor<float>(new[] { 2, 77, 768 });
+
+            for (var i = 0; i < textPromptEmbeddings.Length; i++)
+            {
+                textEmbeddings[0, i / 768, i % 768] = uncondEmbedding[i];
+                textEmbeddings[1, i / 768, i % 768] = textPromptEmbeddings[i];
+            }
+            return textEmbeddings;
+        }
         public static int[] TokenizeText(string text, StableDiffusionConfig config)
         {
             // Create session options for custom op of extensions

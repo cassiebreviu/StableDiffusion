@@ -66,8 +66,11 @@ namespace OnnxRuntime.ML.StableDiffusion
             return noisePred;
         }
 
-        public static SixLabors.ImageSharp.Image Inference(DenseTensor<float> textEmbeddings, StableDiffusionConfig config)
+        public static SixLabors.ImageSharp.Image Inference(String prompt, StableDiffusionConfig config)
         {
+            // Preprocess text
+            var textEmbeddings = TextProcessing.PreprocessText(prompt, config);
+
             var scheduler = new LMSDiscreteScheduler();
             //var scheduler = new EulerAncestralDiscreteScheduler();
             var timesteps = scheduler.SetTimesteps(config.NumInferenceSteps);
@@ -140,5 +143,6 @@ namespace OnnxRuntime.ML.StableDiffusion
             //}
 
         }
+
     }
 }
