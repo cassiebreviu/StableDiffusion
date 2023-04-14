@@ -34,7 +34,7 @@ namespace StableDiffusion
                 UnetOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\unet\model.onnx",
                 VaeDecoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\vae_decoder\model.onnx",
                 SafetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\models\safety_checker\model.onnx",
-                OutputImagePath = "./sample.png"
+                OutputImagePath = "sample.png"
             };
 
             // Inference Stable Diff
@@ -44,6 +44,12 @@ namespace StableDiffusion
             if (image == null)
             {
                 Console.WriteLine("Unable to create image, please try again.");
+            }
+            else
+            {
+                // Get exectiion path and append output image name
+                var path = Path.Combine(Directory.GetCurrentDirectory(), config.OutputImagePath);
+                Console.WriteLine("Image saved to: " + path);
             }
 
             // Stop the timer
