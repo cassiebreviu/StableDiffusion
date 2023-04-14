@@ -7,7 +7,7 @@
 		<Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
 	</PropertyGroup>
 
-	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
 		<Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
 		<Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
@@ -20,7 +20,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Cassie Breviu</Authors>
-		<Version>1.1.6</Version>
+		<Version>1.0.0</Version>
 		<PackageOutputPath>C:\code\localnuget</PackageOutputPath>
 		<Description>This is an unoffical Onnx Runtime SDK style NuGet for implementing Stable Diffusion logic into your application.</Description>
 		<PackageProjectUrl>https://github.com/cassiebreviu/StableDiffusion</PackageProjectUrl>
