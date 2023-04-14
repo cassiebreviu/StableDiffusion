@@ -53,12 +53,12 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
         // Set GPU Device ID.
         DeviceId = 1,
         // Update paths to your models
-        TokenizerOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_tokenizer\custom_op_cliptok.onnx",
-        TextEncoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_encoder\model.onnx",
-        UnetOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\unet\model.onnx",
-        VaeDecoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\vae_decoder\model.onnx",
-        SafetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\models\safety_checker\model.onnx",
-        OutputImagePath = "./sample.png"
+        TokenizerOnnxPath = @".\models\text_tokenizer\custom_op_cliptok.onnx",
+        TextEncoderOnnxPath = @".\models\text_encoder\model.onnx",
+        UnetOnnxPath = @".\models\unet\model.onnx",
+        VaeDecoderOnnxPath = @".\models\vae_decoder\model.onnx",
+        SafetyModelPath = @".\models\safety_checker\model.onnx",
+        OutputImagePath = "sample.png"
     };
 
     // Inference Stable Diff
@@ -69,6 +69,13 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
     {
         Console.WriteLine("Unable to create image, please try again.");
     }
+    else
+    {
+        // Output image path
+        var path = Path.Combine(Directory.GetCurrentDirectory(), config.OutputImagePath);
+        Console.WriteLine("Image saved to: " + path);
+    }
+
 ```
 
 - Set Build for x64 
