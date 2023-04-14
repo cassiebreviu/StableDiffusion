@@ -7,7 +7,7 @@
 		<Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
 	</PropertyGroup>
 
-	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
 		<Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
 		<Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
