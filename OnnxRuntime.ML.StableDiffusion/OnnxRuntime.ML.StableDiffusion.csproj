@@ -20,7 +20,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Cassie Breviu</Authors>
-		<Version>1.1.5</Version>
+		<Version>1.1.6</Version>
 		<PackageOutputPath>C:\code\localnuget</PackageOutputPath>
 		<Description>This is an unoffical Onnx Runtime SDK style NuGet for implementing Stable Diffusion logic into your application.</Description>
 		<PackageProjectUrl>https://github.com/cassiebreviu/StableDiffusion</PackageProjectUrl>
@@ -36,15 +36,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="ortextensions.dll" GeneratePathProperty="true">
+		<Content Include="ortextensions.dll">
 			<Pack>true</Pack>
-			<PackagePath>contentFiles;content;lib;</PackagePath>
-			<IncludeInPackage>true</IncludeInPackage>
-			<CopyToOutput>true</CopyToOutput>
-			<BuildAction>Content</BuildAction>
-			<copyToOutput>true</copyToOutput>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
 		</Content>
 	</ItemGroup>
 
