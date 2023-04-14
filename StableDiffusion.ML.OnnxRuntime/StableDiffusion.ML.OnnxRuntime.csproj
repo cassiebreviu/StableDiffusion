@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
-	  <Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
-	  <Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
-	  <Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
+		<Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
+		<Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
+		<Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+		<Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
-	  <Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
-	  <Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
-	  <Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
+		<Microsoft_AI_DirectML_SkipIncludeDir>False</Microsoft_AI_DirectML_SkipIncludeDir>
+		<Microsoft_AI_DirectML_SkipLink>False</Microsoft_AI_DirectML_SkipLink>
+		<Microsoft_AI_DirectML_SkipDebugLayerCopy>False</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+		<Microsoft_AI_DirectML_SkipLibraryCopy>False</Microsoft_AI_DirectML_SkipLibraryCopy>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -20,19 +20,22 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Cassie Breviu</Authors>
-		<Version>1.1.4</Version>
+		<Version>1.0.2</Version>
 		<PackageOutputPath>C:\code\localnuget</PackageOutputPath>
+		<Description>A package with the logic for implementing Stable Diffusion Text-to-Image generative AI capabilities into your application leveraging OnnxRuntime.</Description>
+		<PackageProjectUrl>https://github.com/cassiebreviu/StableDiffusion</PackageProjectUrl>
+		<PackageId>StableDiffusion.ML.OnnxRuntime</PackageId>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+		<PackageReference Include="NumSharp" Version="0.30.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
 		<PackageReference Include="Microsoft.ML" Version="2.0.1" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.14.1" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
-		<PackageReference Include="NumSharp" Version="0.30.0" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
 	</ItemGroup>
-
 	<ItemGroup>
 		<Content Include="ortextensions.dll" GeneratePathProperty="true">
 			<Pack>true</Pack>
@@ -52,5 +55,11 @@
 			<PackagePath>lib\$(TargetFramework)</PackagePath>
 		</Content>
 	</ItemGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
 
 </Project>

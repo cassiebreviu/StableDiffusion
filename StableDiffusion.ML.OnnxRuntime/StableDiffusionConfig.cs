@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 
-namespace OnnxRuntime.ML.StableDiffusion
+namespace StableDiffusion.ML.OnnxRuntime
 {
     public class StableDiffusionConfig
     {
@@ -10,6 +10,7 @@ namespace OnnxRuntime.ML.StableDiffusion
             DirectML = 0,
             Cuda = 1,
             Cpu = 2,
+            //OpenVINO = 4,
         }
         // default props
         public int NumInferenceSteps = 15;

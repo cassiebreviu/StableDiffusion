@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StableDiffusion", "StableDiffusion\StableDiffusion.csproj", "{8B12F2B3-1D9C-40E4-BCEB-AC5B767C5810}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnnxRuntime.ML.StableDiffusion", "OnnxRuntime.ML.StableDiffusion\OnnxRuntime.ML.StableDiffusion.csproj", "{34D8EADB-8E26-4487-AA4D-EED053C29016}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StableDiffusion.ML.OnnxRuntime", "StableDiffusion.ML.OnnxRuntime\StableDiffusion.ML.OnnxRuntime.csproj", "{34D8EADB-8E26-4487-AA4D-EED053C29016}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

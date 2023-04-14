@@ -2,7 +2,7 @@
 using MathNet.Numerics;
 using NumSharp;
 
-namespace OnnxRuntime.ML.StableDiffusion
+namespace StableDiffusion.ML.OnnxRuntime
 {
     public class LMSDiscreteScheduler : SchedulerBase
     {

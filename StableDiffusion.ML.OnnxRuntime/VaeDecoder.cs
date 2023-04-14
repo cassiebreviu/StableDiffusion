@@ -3,7 +3,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 
-namespace OnnxRuntime.ML.StableDiffusion
+namespace StableDiffusion.ML.OnnxRuntime
 {
     public static class VaeDecoder
     {

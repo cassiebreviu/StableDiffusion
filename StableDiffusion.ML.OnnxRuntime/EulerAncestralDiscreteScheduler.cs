@@ -1,7 +1,7 @@
 ﻿using Microsoft.ML.OnnxRuntime.Tensors;
 using NumSharp;
 
-namespace OnnxRuntime.ML.StableDiffusion
+namespace StableDiffusion.ML.OnnxRuntime
 {
     public class EulerAncestralDiscreteScheduler : SchedulerBase
     {
