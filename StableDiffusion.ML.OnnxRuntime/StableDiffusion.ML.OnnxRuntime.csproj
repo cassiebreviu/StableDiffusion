@@ -20,7 +20,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Cassie Breviu</Authors>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<PackageOutputPath>C:\code\localnuget</PackageOutputPath>
 		<Description>A package with the logic for implementing Stable Diffusion Text-to-Image generative AI capabilities into your application leveraging OnnxRuntime.</Description>
 		<PackageProjectUrl>https://github.com/cassiebreviu/StableDiffusion</PackageProjectUrl>
@@ -37,7 +37,7 @@
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="ortextensions.dll" GeneratePathProperty="true">
+		<Content Include="ortextensions.dll;cliptokenizer.onnx" GeneratePathProperty="true">
 			<Pack>true</Pack>
 			<PackagePath>contentFiles;content;lib;</PackagePath>
 			<IncludeInPackage>true</IncludeInPackage>
@@ -50,13 +50,7 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="ortextensions.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\$(TargetFramework)</PackagePath>
-		</Content>
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="\"/>
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

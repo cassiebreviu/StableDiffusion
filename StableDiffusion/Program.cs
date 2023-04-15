@@ -15,8 +15,6 @@ namespace StableDiffusion
 
             var config = new StableDiffusionConfig
             {
-                //num of images requested
-                BatchSize = 1,
                 // Number of denoising steps
                 NumInferenceSteps = 15,
                 // Scale for classifier-free guidance
@@ -29,12 +27,10 @@ namespace StableDiffusion
                 // Set GPU Device ID.
                 DeviceId = 1,
                 // Update paths to your models
-                TokenizerOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_tokenizer\custom_op_cliptok.onnx",
                 TextEncoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_encoder\model.onnx",
                 UnetOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\unet\model.onnx",
                 VaeDecoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\vae_decoder\model.onnx",
                 SafetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\models\safety_checker\model.onnx",
-                OutputImagePath = "sample.png"
             };
 
             // Inference Stable Diff
@@ -45,13 +41,6 @@ namespace StableDiffusion
             {
                 Console.WriteLine("Unable to create image, please try again.");
             }
-            else
-            {
-                // Get exectiion path and append output image name
-                var path = Path.Combine(Directory.GetCurrentDirectory(), config.OutputImagePath);
-                Console.WriteLine("Image saved to: " + path);
-            }
-
             // Stop the timer
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
