@@ -54,6 +54,7 @@
 		<Content Include="StableDiffusion.ML.OnnxRuntime.targets" PackagePath="build/StableDiffusion.ML.OnnxRuntime.targets" />
 		<Content Include="cliptokenizer.onnx" Pack="true" PackagePath="content">
 			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
