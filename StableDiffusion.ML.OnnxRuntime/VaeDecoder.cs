@@ -35,7 +35,13 @@ namespace StableDiffusion.ML.OnnxRuntime
                     );
                 }
             }
-            result.Save(config.OutputImagePath);
+
+            var imageName = $"sd_image_{DateTime.Now.ToString("yyyyMMddHHmm")}.png";
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), config.ImageOutputPath, imageName);
+
+            result.Save(imagePath);
+
+            Console.WriteLine($"Image saved to: {imagePath}");
 
             return result;
         }

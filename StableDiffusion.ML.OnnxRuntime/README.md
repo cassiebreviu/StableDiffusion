@@ -6,11 +6,10 @@ This package contains the logic to do inferencing for the popular Stable Diffusi
 
 # How to use this NuGet package
 
-- Download the [ONNX Stable Diffusion models from Hugging Face](https://huggingface.co/models?sort=downloads&search=Stable+Diffusion).
-     - [Stable Diffusion Models v1.4](https://huggingface.co/CompVis/stable-diffusion-v1-4/tree/onnx)
-     - [Stable Diffusion Models v1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5/tree/onnx)
-
-
+- Download the ONNX Stable Diffusion models from Hugging Face
+    - [Stable Diffusion Models v1.4](https://huggingface.co/CompVis/stable-diffusion-v1-4/tree/onnx)
+    - [Stable Diffusion Models v1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5/tree/onnx)
+    
 - Once you have selected a model version repo, click `Files and Versions`, then select the `ONNX` branch. If there isn't an ONNX model branch available, use the `main` branch and convert it to ONNX. See the [ONNX conversion tutorial for PyTorch](https://learn.microsoft.com/windows/ai/windows-ml/tutorials/pytorch-convert-model) for more information.
 
 - Clone the model repo:
@@ -26,10 +25,7 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
 <PackageReference Include="Microsoft.ML" Version="2.0.1" />
 <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1" />
 ```
-- Install the following NuGets for GPU (Cuda)
-```xml
-<PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.14.1" />
-```
+- Cuda support coming soon.
 
 - Sample logic for implementing in your project
 ```csharp
@@ -39,26 +35,19 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
 
     var config = new StableDiffusionConfig
     {
-        //num of images requested
-        BatchSize = 1,
         // Number of denoising steps
         NumInferenceSteps = 15,
         // Scale for classifier-free guidance
         GuidanceScale = 7.5,
-        // Set your preferred Execution Provider. Currently (GPU, DirectML, CPU) are supported in this project.
-        // ONNX Runtime supports many more than this. Learn more here: https://onnxruntime.ai/docs/execution-providers/
-        // The config is defaulted to CUDA. You can override it here if needed.
-        // To use DirectML EP intall the Microsoft.ML.OnnxRuntime.DirectML and uninstall Microsoft.ML.OnnxRuntime.GPU
+        // Set your preferred Execution Provider. Currently DirectML and CPU are supported.
         ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.DirectML,
         // Set GPU Device ID.
         DeviceId = 1,
         // Update paths to your models
-        TokenizerOnnxPath = @".\models\text_tokenizer\custom_op_cliptok.onnx",
         TextEncoderOnnxPath = @".\models\text_encoder\model.onnx",
         UnetOnnxPath = @".\models\unet\model.onnx",
         VaeDecoderOnnxPath = @".\models\vae_decoder\model.onnx",
         SafetyModelPath = @".\models\safety_checker\model.onnx",
-        OutputImagePath = "sample.png"
     };
 
     // Inference Stable Diff
@@ -68,12 +57,6 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
     if (image == null)
     {
         Console.WriteLine("Unable to create image, please try again.");
-    }
-    else
-    {
-        // Output image path
-        var path = Path.Combine(Directory.GetCurrentDirectory(), config.OutputImagePath);
-        Console.WriteLine("Image saved to: " + path);
     }
 
 ```
