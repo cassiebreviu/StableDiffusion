@@ -1,0 +1,9 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<ModelFiles Include="$(MSBuildThisFileDirectory)..\content\cliptokenizer.onnx" />
+	</ItemGroup>
+
+	<Target Name="CopyModelFiles" BeforeTargets="Build">
+		<Copy SourceFiles="@(ModelFiles)" DestinationFolder="$(TargetDir)" />
+	</Target>
+</Project>

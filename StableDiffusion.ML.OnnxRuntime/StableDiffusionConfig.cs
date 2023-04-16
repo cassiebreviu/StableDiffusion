@@ -27,6 +27,9 @@ namespace StableDiffusion.ML.OnnxRuntime
         public string VaeDecoderOnnxPath = "";
         public string SafetyModelPath = "";
 
+        // default directory for images
+        public string ImageOutputPath = "";
+
         public SessionOptions GetSessionOptionsForEp()
         {
             var sessionOptions = new SessionOptions();

@@ -37,7 +37,7 @@
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="ortextensions.dll;cliptokenizer.onnx;" GeneratePathProperty="true">
+		<Content Include="ortextensions.dll;" GeneratePathProperty="true">
 			<Pack>true</Pack>
 			<PackagePath>contentFiles;content;lib;</PackagePath>
 			<IncludeInPackage>true</IncludeInPackage>
@@ -50,11 +50,24 @@
 			<PackagePath>lib\$(TargetFramework)</PackagePath>
 		</Content>
 	</ItemGroup>
+	<ItemGroup Label="FilesToCopy">
+		<Content Include="StableDiffusion.ML.OnnxRuntime.targets" PackagePath="build/StableDiffusion.ML.OnnxRuntime.targets" />
+		<Content Include="cliptokenizer.onnx" Pack="true" PackagePath="content">
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+		</Content>
+	</ItemGroup>
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="EulerAncestralDiscreteScheduler.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Compile>
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
-
+	<Target Name="CopyOnnxFile" AfterTargets="Build">
+		<Copy SourceFiles="cliptokenizer.onnx" DestinationFolder="$(OutputPath)" />
+	</Target>
 </Project>

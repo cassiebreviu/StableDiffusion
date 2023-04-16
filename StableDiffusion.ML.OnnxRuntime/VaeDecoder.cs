@@ -37,8 +37,11 @@ namespace StableDiffusion.ML.OnnxRuntime
             }
 
             var imageName = $"sd_image_{DateTime.Now.ToString("yyyyMMddHHmm")}.png";
-            result.Save(imageName);
-            Console.WriteLine($"Image saved to: {Directory.GetCurrentDirectory()}\\{imageName}");
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), config.ImageOutputPath, imageName);
+
+            result.Save(imagePath);
+
+            Console.WriteLine($"Image saved to: {imagePath}");
 
             return result;
         }
