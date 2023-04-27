@@ -33,8 +33,8 @@
 		<PackageReference Include="NumSharp" Version="0.30.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
 		<PackageReference Include="Microsoft.ML" Version="2.0.1" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.15.0-dev-20230424-0521-c82bebde6a" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.15.0-dev-20230424-0617-c82bebde6a" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="ortextensions.dll;" GeneratePathProperty="true">
@@ -64,6 +64,14 @@
 	  <Compile Update="EulerAncestralDiscreteScheduler.cs">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="DirectML.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="onnxruntime.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

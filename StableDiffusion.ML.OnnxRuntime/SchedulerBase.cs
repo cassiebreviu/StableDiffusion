@@ -6,11 +6,11 @@ namespace StableDiffusion.ML.OnnxRuntime
     public abstract class SchedulerBase
     {
         protected readonly int _numTrainTimesteps;
-        protected List<float> _alphasCumulativeProducts;
+        protected List<Float16> _alphasCumulativeProducts;
         public bool is_scale_input_called;
 
-        public abstract List<int> Timesteps { get; set; }
-        public abstract Tensor<float> Sigmas { get; set; }
+        public abstract List<Float16> Timesteps { get; set; }
+        public abstract Tensor<Float16> Sigmas { get; set; }
         public abstract float InitNoiseSigma { get; set; }
 
         public SchedulerBase(int _numTrainTimesteps = 1000)
@@ -63,25 +63,25 @@ namespace StableDiffusion.ML.OnnxRuntime
             return result.ToArray<double>();
         }
 
-        public DenseTensor<float> ScaleInput(DenseTensor<float> sample, int timestep)
+        public DenseTensor<Float16> ScaleInput(DenseTensor<Float16> sample, Float16 timestep)
         {
             // Get step index of timestep from TimeSteps
             int stepIndex = this.Timesteps.IndexOf(timestep);
             // Get sigma at stepIndex
             var sigma = this.Sigmas[stepIndex];
-            sigma = (float)Math.Sqrt((Math.Pow(sigma, 2) + 1));
+            sigma =(Float16)Math.Sqrt((Math.Pow(sigma, 2) + 1));
 
             // Divide sample tensor shape {2,4,64,64} by sigma
             sample = TensorHelper.DivideTensorByFloat(sample.ToArray(), sigma, sample.Dimensions.ToArray());
             is_scale_input_called = true;
             return sample;
         }
-        public abstract int[] SetTimesteps(int num_inference_steps);
+        public abstract Float16[] SetTimesteps(int num_inference_steps);
 
-        public abstract DenseTensor<float> Step(
-               Tensor<float> modelOutput,
-               int timestep,
-               Tensor<float> sample,
+        public abstract DenseTensor<Float16> Step(
+               Tensor<Float16> modelOutput,
+               Float16 timestep,
+               Tensor<Float16> sample,
                int order = 4);
     }
 }

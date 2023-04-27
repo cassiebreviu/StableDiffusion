@@ -5,7 +5,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public static class SafetyChecker
     {
-        public static int IsSafe(Tensor<float> resultImage, StableDiffusionConfig config)
+        public static int IsSafe(Tensor<Float16> resultImage, StableDiffusionConfig config)
         {
 
             var sessionOptions = config.GetSessionOptionsForEp();

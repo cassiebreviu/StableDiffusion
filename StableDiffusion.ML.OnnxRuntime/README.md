@@ -1,5 +1,5 @@
 
-# Inference Stable Diffusion with C# and ONNX Runtime
+# Experimental Package to Inference Stable Diffusion with C# and ONNX Runtime
 
 This package contains the logic to do inferencing for the popular Stable Diffusion deep learning model in C#.  Stable Diffusion models take a text prompt and create an image that represents the text.
 
