@@ -5,29 +5,32 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public class UNet
     {
-        public static List<NamedOnnxValue> CreateUnetModelInput(Tensor<Float16> encoderHiddenStates, Tensor<Float16> sample, Float16 timeStep)
+        public static List<NamedOnnxValue> CreateUnetModelInput(Tensor<float> encoderHiddenStates, Tensor<float> sample, float timeStep)
         {
+            // convert encoderHiddenStates to float16 tensors
+            var encoderHiddenStatesFloat16 = TensorHelper.ConvertFloatToFloat16(encoderHiddenStates);
+            var sampleFloat16 = TensorHelper.ConvertFloatToFloat16(sample);
 
             var input = new List<NamedOnnxValue> {
-                NamedOnnxValue.CreateFromTensor("encoder_hidden_states", encoderHiddenStates),
-                NamedOnnxValue.CreateFromTensor("sample", sample),
-                NamedOnnxValue.CreateFromTensor("timestep", new DenseTensor<Float16>(new Float16[] { timeStep }, new int[] { 1 }))
+                NamedOnnxValue.CreateFromTensor<Float16>("encoder_hidden_states", encoderHiddenStatesFloat16),
+                NamedOnnxValue.CreateFromTensor<Float16>("sample", sampleFloat16),
+                NamedOnnxValue.CreateFromTensor("timestep", new DenseTensor<Float16>(new Float16[] { (Float16)timeStep }, new int[] { 1 }))
             };
-
+            
             return input;
 
         }
 
-        public static Tensor<Float16> GenerateLatentSample(StableDiffusionConfig config, int seed, float initNoiseSigma)
+        public static Tensor<float> GenerateLatentSample(StableDiffusionConfig config, int seed, float initNoiseSigma)
         {
             return GenerateLatentSample(config.Height, config.Width, seed, initNoiseSigma);
         }
-        public static Tensor<Float16> GenerateLatentSample(int height, int width, int seed, float initNoiseSigma)
+        public static Tensor<float> GenerateLatentSample(int height, int width, int seed, float initNoiseSigma)
         {
             var random = new Random(seed);
             var batchSize = 1;
             var channels = 4;
-            var latents = new DenseTensor<Float16>(new[] { batchSize, channels, height / 8, width / 8 });
+            var latents = new DenseTensor<float>(new[] { batchSize, channels, height / 8, width / 8 });
             var latentsArray = latents.ToArray();
 
             for (int i = 0; i < latentsArray.Length; i++)
@@ -41,7 +44,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 
                 // add noise to latents with * scheduler.init_noise_sigma
                 // generate randoms that are negative and positive
-                latentsArray[i] = (Float16)(standardNormalRand * initNoiseSigma);
+                latentsArray[i] = (float)(standardNormalRand * initNoiseSigma);
             }
 
             latents = TensorHelper.CreateTensor(latentsArray, latents.Dimensions.ToArray());
@@ -50,7 +53,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 
         }
 
-        private static Tensor<Float16> performGuidance(Tensor<Float16> noisePred, Tensor<Float16> noisePredText, double guidanceScale)
+        private static Tensor<float> performGuidance(Tensor<float> noisePred, Tensor<float> noisePredText, double guidanceScale)
         {
             for (int i = 0; i < noisePred.Dimensions[0]; i++)
             {
@@ -60,7 +63,7 @@ namespace StableDiffusion.ML.OnnxRuntime
                     {
                         for (int l = 0; l < noisePred.Dimensions[3]; l++)
                         {
-                            noisePred[i, j, k, l] = (Float16)(noisePred[i, j, k, l] +(Float16)guidanceScale * (noisePredText[i, j, k, l] - noisePred[i, j, k, l]));
+                            noisePred[i, j, k, l] = (float)(noisePred[i, j, k, l] +(float)guidanceScale * (noisePredText[i, j, k, l] - noisePred[i, j, k, l]));
                         }
                     }
                 }
@@ -120,7 +123,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             // Scale and decode the image latents with vae.
             // latents = 1 / 0.18215 * latents
-            latents = TensorHelper.MultipleTensorByFloat(latents.ToArray(), (Float16)(1.0f / 0.18215f), latents.Dimensions.ToArray());
+            latents = TensorHelper.MultipleTensorByFloat(latents.ToArray(), (float)(1.0f / 0.18215f), latents.Dimensions.ToArray());
             var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
 
             // Decode image

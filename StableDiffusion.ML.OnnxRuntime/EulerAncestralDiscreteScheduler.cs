@@ -8,20 +8,20 @@ namespace StableDiffusion.ML.OnnxRuntime
         private readonly string _predictionType;
         public override float InitNoiseSigma { get; set; }
         public int num_inference_steps;
-        public override List<Float16> Timesteps { get; set; }
-        public override Tensor<Float16> Sigmas { get; set; }
+        public override List<float> Timesteps { get; set; }
+        public override Tensor<float> Sigmas { get; set; }
 
         public EulerAncestralDiscreteScheduler(
             int num_train_timesteps = 1000,
             float beta_start = 0.00085f,
             float beta_end = 0.012f,
             string beta_schedule = "scaled_linear",
-            List<Float16> trained_betas = null,
+            List<float> trained_betas = null,
             string prediction_type = "epsilon"
         ) : base(num_train_timesteps)
         {
-            var alphas = new List<Float16>();
-            var betas = new List<Float16>();
+            var alphas = new List<float>();
+            var betas = new List<float>();
             _predictionType = prediction_type;
 
             if (trained_betas != null)
@@ -32,18 +32,18 @@ namespace StableDiffusion.ML.OnnxRuntime
             {
                 for (int i = 0; i < num_train_timesteps; i++)
                 {
-                    betas.Add((Float16)(beta_start + (beta_end - beta_start) * i / (num_train_timesteps - 1)));
+                    betas.Add((float)(beta_start + (beta_end - beta_start) * i / (num_train_timesteps - 1)));
                 }
                 //betas = Enumerable.Range(0, num_train_timesteps).Select(i => beta_start + (beta_end - beta_start) * i / (num_train_timesteps - 1)).ToList();
             }
             else if (beta_schedule == "scaled_linear")
             {
-                var start = (Float16)Math.Sqrt(beta_start);
-                var end = (Float16)Math.Sqrt(beta_end);
-                betas = np.linspace(start, end, num_train_timesteps).ToArray<Float16>().ToList();
+                var start = (float)Math.Sqrt(beta_start);
+                var end = (float)Math.Sqrt(beta_end);
+                betas = np.linspace(start, end, num_train_timesteps).ToArray<float>().ToList();
                 for (int i = 0; i < betas.Count(); i++)
                 {
-                    betas[i] = (Float16)(betas[i] * betas[i]);
+                    betas[i] = (float)(betas[i] * betas[i]);
                 }
             }
             else
@@ -53,42 +53,42 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             for (int i = 0; i < betas.Count(); i++)
             {
-                alphas.Add((Float16)(1 - betas[i]));
+                alphas.Add((float)(1 - betas[i]));
                 //alphas = betas.Select(beta => 1 - beta).ToList();
             }
 
-            this._alphasCumulativeProducts = alphas.Select((alpha, i) => alphas.Take(i + 1).Aggregate<Float16>((a, b) => (Float16)(a * b))).ToList();
+            this._alphasCumulativeProducts = alphas.Select((alpha, i) => alphas.Take(i + 1).Aggregate<float>((a, b) => (float)(a * b))).ToList();
             // Create sigmas as a list and reverse it
             var sigmas = _alphasCumulativeProducts.Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
 
             // standard deviation of the initial noise distrubution
-            this.InitNoiseSigma = (Float16)sigmas.Max();
+            this.InitNoiseSigma = (float)sigmas.Max();
         }
 
-        public override Float16[] SetTimesteps(int num_inference_steps)
+        public override float[] SetTimesteps(int num_inference_steps)
         {
             double start = 0;
             double stop = _numTrainTimesteps - 1;
             double[] timesteps = np.linspace(start, stop, num_inference_steps).ToArray<double>();
 
-            this.Timesteps = timesteps.Select(x => (Float16)x).Reverse().ToList();
+            this.Timesteps = timesteps.Select(x => (float)x).Reverse().ToList();
 
             var sigmas = _alphasCumulativeProducts.Select(alpha_prod => Math.Sqrt((1 - alpha_prod) / alpha_prod)).Reverse().ToList();
             var range = np.arange((double)0, (double)(sigmas.Count)).ToArray<double>();
             sigmas = Interpolate(timesteps, range, sigmas).ToList();
-            this.InitNoiseSigma = (Float16)sigmas.Max();
-            this.Sigmas = new DenseTensor<Float16>(sigmas.Count());
+            this.InitNoiseSigma = (float)sigmas.Max();
+            this.Sigmas = new DenseTensor<float>(sigmas.Count());
             for (int i = 0; i < sigmas.Count(); i++)
             {
-                this.Sigmas[i] = (Float16)sigmas[i];
+                this.Sigmas[i] = (float)sigmas[i];
             }
             return this.Timesteps.ToArray();
 
         }
 
-        public override DenseTensor<Float16> Step(Tensor<Float16> modelOutput,
-               Float16 timestep,
-               Tensor<Float16> sample,
+        public override DenseTensor<float> Step(Tensor<float> modelOutput,
+               float timestep,
+               Tensor<float> sample,
                int order = 4)
         {
 
@@ -101,11 +101,11 @@ namespace StableDiffusion.ML.OnnxRuntime
             }
 
 
-            int stepIndex = this.Timesteps.IndexOf((Float16)timestep);
+            int stepIndex = this.Timesteps.IndexOf((float)timestep);
             var sigma = this.Sigmas[stepIndex];
 
             // 1. compute predicted original sample (x_0) from sigma-scaled predicted noise
-            Tensor<Float16> predOriginalSample = null;
+            Tensor<float> predOriginalSample = null;
             if (this._predictionType == "epsilon")
             {
                 //  pred_original_sample = sample - sigma * model_output
@@ -141,16 +141,16 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             // 2. Convert to an ODE derivative
             var sampleMinusPredOriginalSample = TensorHelper.SubtractTensors(sample, predOriginalSample);
-            DenseTensor<Float16> derivative = TensorHelper.DivideTensorByFloat(sampleMinusPredOriginalSample.ToArray(), sigma, predOriginalSample.Dimensions.ToArray());// (sample - predOriginalSample) / sigma;
+            DenseTensor<float> derivative = TensorHelper.DivideTensorByFloat(sampleMinusPredOriginalSample.ToArray(), sigma, predOriginalSample.Dimensions.ToArray());// (sample - predOriginalSample) / sigma;
 
             var dt = sigmaDown - sigma;
 
-            DenseTensor<Float16> prevSample = TensorHelper.AddTensors(sample, TensorHelper.MultipleTensorByFloat(derivative, (Float16)dt));// sample + derivative * dt;
+            DenseTensor<float> prevSample = TensorHelper.AddTensors(sample, TensorHelper.MultipleTensorByFloat(derivative, (float)dt));// sample + derivative * dt;
 
             //var noise = generator == null ? np.random.randn(modelOutput.shape) : np.random.RandomState(generator).randn(modelOutput.shape);
             var noise = TensorHelper.GetRandomTensor(prevSample.Dimensions);
 
-            var noiseSigmaUpProduct = TensorHelper.MultipleTensorByFloat(noise, (Float16)sigmaUp);
+            var noiseSigmaUpProduct = TensorHelper.MultipleTensorByFloat(noise, (float)sigmaUp);
             prevSample = TensorHelper.AddTensors(prevSample, noiseSigmaUpProduct);// prevSample + noise * sigmaUp;
 
             return prevSample;

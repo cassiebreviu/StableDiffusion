@@ -5,7 +5,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public static class TextProcessing
     {
-        public static DenseTensor<Float16> PreprocessText(String prompt, StableDiffusionConfig config)
+        public static DenseTensor<float> PreprocessText(String prompt, StableDiffusionConfig config)
         {
             // Load the tokenizer and text encoder to tokenize and encode the text.
             var textTokenized = TokenizeText(prompt, config);
@@ -16,7 +16,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             var uncondEmbedding = TextEncoder(uncondInputTokens, config).ToArray();
 
             // Concant textEmeddings and uncondEmbedding
-            var textEmbeddings = new DenseTensor<Float16>(new[] { 2, 77, 768 });
+            var textEmbeddings = new DenseTensor<float>(new[] { 2, 77, 768 });
 
             for (var i = 0; i < textPromptEmbeddings.Length; i++)
             {
@@ -70,7 +70,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             return inputIds.ToArray();
         }
 
-        public static DenseTensor<Float16> TextEncoder(int[] tokenizedInput, StableDiffusionConfig config)
+        public static DenseTensor<float> TextEncoder(int[] tokenizedInput, StableDiffusionConfig config)
         {
             // Create input tensor.
             var input_ids = TensorHelper.CreateTensor(tokenizedInput, new[] { 1, tokenizedInput.Count() });
@@ -84,9 +84,9 @@ namespace StableDiffusion.ML.OnnxRuntime
             // Run inference.
             var encoded = encodeSession.Run(input);
 
-            var lastHiddenState = (encoded.ToList().First().Value as IEnumerable<Float16>).ToArray();
+            var lastHiddenStateD = (encoded.ToList().First().Value as IEnumerable<Float16>).ToArray();
             // cast to float
-            //var lastHiddenState = lastHiddenStateD.Select(x =>(Float16)x).ToArray();
+            var lastHiddenState = lastHiddenStateD.Select(x =>(float)x).ToArray();
             var lastHiddenStateTensor = TensorHelper.CreateTensor(lastHiddenState.ToArray(), new[] { 1, 77, 768 });
 
             return lastHiddenStateTensor;

@@ -7,20 +7,20 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public static class VaeDecoder
     {
-        public static Tensor<Float16> Decoder(List<NamedOnnxValue> input, string VaeDecoderOnnxPath)
+        public static Tensor<float> Decoder(List<NamedOnnxValue> input, string VaeDecoderOnnxPath)
         {
             // Create an InferenceSession from the Model Path.
             var vaeDecodeSession = new InferenceSession(VaeDecoderOnnxPath);
 
            // Run session and send the input data in to get inference output. 
             var output = vaeDecodeSession.Run(input);
-            var result = (output.ToList().First().Value as Tensor<Float16>);
+            var result = (output.ToList().First().Value as Tensor<float>);
 
             return result;
         }
 
         // create method to convert float array to an image with imagesharp
-        public static Image<Rgba32> ConvertToImage(Tensor<Float16> output, StableDiffusionConfig config, int width = 512, int height = 512)
+        public static Image<Rgba32> ConvertToImage(Tensor<float> output, StableDiffusionConfig config, int width = 512, int height = 512)
         {
             var result = new Image<Rgba32>(width, height);
 
