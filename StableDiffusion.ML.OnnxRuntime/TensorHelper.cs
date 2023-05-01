@@ -20,7 +20,7 @@ namespace StableDiffusion.ML.OnnxRuntime
                 float16Array[i] = (Float16)floatArray[i];
             }
 
-            return float16Tensor;
+            return CreateTensor<Float16>(float16Array, tensor.Dimensions.ToArray());
         }
         public static DenseTensor<float> DivideTensorByFloat(float[] data, float value, int[] dimensions)
         {
@@ -142,6 +142,20 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             return latents;
 
+        }
+
+        public static Tensor<float> ConvertFloat16ToFloat(Tensor<Float16>? result)
+        {
+            var floatTensor = new DenseTensor<float>(result.Dimensions.ToArray());
+            var floatArray = floatTensor.ToArray();
+            var float16Array = result.ToArray();
+
+            for (int i = 0; i < floatArray.Length; i++)
+            {
+                floatArray[i] = (float)float16Array[i];
+            }
+
+            return CreateTensor<float>(floatArray, result.Dimensions.ToArray()); ;
         }
     }
 }

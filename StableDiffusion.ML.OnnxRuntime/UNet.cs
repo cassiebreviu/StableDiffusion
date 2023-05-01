@@ -124,10 +124,11 @@ namespace StableDiffusion.ML.OnnxRuntime
             // Scale and decode the image latents with vae.
             // latents = 1 / 0.18215 * latents
             latents = TensorHelper.MultipleTensorByFloat(latents.ToArray(), (float)(1.0f / 0.18215f), latents.Dimensions.ToArray());
-            var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
+            var latentsFloat16 = TensorHelper.ConvertFloatToFloat16(latents);
+            var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latentsFloat16) };
 
             // Decode image
-            var imageResultTensor = VaeDecoder.Decoder(decoderInput, config.VaeDecoderOnnxPath);
+            var imageResultTensor = VaeDecoder.Decoder(decoderInput, config);
 
             // TODO: Fix safety checker model
             //var isSafe = SafetyChecker.IsSafe(imageResultTensor);
