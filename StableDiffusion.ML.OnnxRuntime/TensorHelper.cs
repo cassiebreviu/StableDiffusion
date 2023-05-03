@@ -1,4 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime.Tensors;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace StableDiffusion.ML.OnnxRuntime
 {
@@ -17,7 +19,10 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             for (int i = 0; i < floatArray.Length; i++)
             {
-                float16Array[i] = (Float16)floatArray[i];
+                Half halfValue = (Half)floatArray[i]; 
+                byte[] bytes = BitConverter.GetBytes(halfValue); 
+                ushort ushortValue = BitConverter.ToUInt16(bytes);
+                float16Array[i] = (Float16)ushortValue;
             }
 
             return CreateTensor<Float16>(float16Array, tensor.Dimensions.ToArray());
@@ -152,7 +157,9 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             for (int i = 0; i < floatArray.Length; i++)
             {
-                floatArray[i] = (float)float16Array[i];
+                byte[] bytes = BitConverter.GetBytes(float16Array[i]);
+                Half halfValue = System.Buffers.Binary.BinaryPrimitives.ReadHalfLittleEndian(bytes);
+                floatArray[i] = (float)halfValue;
             }
 
             return CreateTensor<float>(floatArray, result.Dimensions.ToArray()); ;

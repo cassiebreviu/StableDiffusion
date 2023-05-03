@@ -30,25 +30,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime.Extensions" Version="0.8.0-alpha" />
 		<PackageReference Include="NumSharp" Version="0.30.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
 		<PackageReference Include="Microsoft.ML" Version="2.0.1" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.15.0-dev-20230424-0521-c82bebde6a" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.15.0-dev-20230424-0617-c82bebde6a" />
-	</ItemGroup>
-	<ItemGroup>
-		<Content Include="ortextensions.dll;" GeneratePathProperty="true">
-			<Pack>true</Pack>
-			<PackagePath>contentFiles;content;lib;</PackagePath>
-			<IncludeInPackage>true</IncludeInPackage>
-			<CopyToOutput>true</CopyToOutput>
-			<BuildAction>Content</BuildAction>
-			<copyToOutput>true</copyToOutput>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<PackagePath>lib\$(TargetFramework)</PackagePath>
-		</Content>
+		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.15.0-dev-20230426-1156-dd1ddcc577" />
 	</ItemGroup>
 	<ItemGroup Label="FilesToCopy">
 		<Content Include="StableDiffusion.ML.OnnxRuntime.targets" PackagePath="build/StableDiffusion.ML.OnnxRuntime.targets" />

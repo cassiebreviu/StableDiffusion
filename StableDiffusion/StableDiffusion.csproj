@@ -11,7 +11,13 @@
 	<ItemGroup>
 		<ProjectReference Include="..\StableDiffusion.ML.OnnxRuntime\StableDiffusion.ML.OnnxRuntime.csproj" />
 		<PackageReference Include="Microsoft.ML" Version="2.0.1" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.14.1" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.15.0-dev-20230426-1156-dd1ddcc577" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="DirectML.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

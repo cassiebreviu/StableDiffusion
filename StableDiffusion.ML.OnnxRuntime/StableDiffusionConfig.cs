@@ -13,14 +13,13 @@ namespace StableDiffusion.ML.OnnxRuntime
         }
         // default props
         public int NumInferenceSteps = 15;
-        public ExecutionProvider ExecutionProviderTarget = ExecutionProvider.Cuda;
+        public ExecutionProvider ExecutionProviderTarget = ExecutionProvider.DirectML;
         public double GuidanceScale = 7.5;
         public int Height = 512;
         public int Width = 512;
-        public int DeviceId = 0;
+        public int DeviceId = 1;
 
 
-        public string OrtExtensionsPath = "ortextensions.dll";
         public string TokenizerOnnxPath = "cliptokenizer.onnx";
         public string TextEncoderOnnxPath = "";
         public string UnetOnnxPath = "";
