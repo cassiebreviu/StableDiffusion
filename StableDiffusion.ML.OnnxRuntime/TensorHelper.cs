@@ -79,8 +79,8 @@ namespace StableDiffusion.ML.OnnxRuntime
                     {
                         for (int l = 0; l < 512 / 8; l++)
                         {
-                            tensor1[i, j, k, l] = tensorToSplit[i, j, k, l];
-                            tensor2[i, j, k, l] = tensorToSplit[i, j + 4, k, l];
+                            tensor1[i, j, k, l] = (float)BitConverter.UInt16BitsToHalf(tensorToSplit[i, j, k, l]);
+                            tensor2[i, j, k, l] = (float)BitConverter.UInt16BitsToHalf(tensorToSplit[i, j + 4, k, l]);
                         }
                     }
                 }
