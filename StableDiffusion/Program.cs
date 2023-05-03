@@ -25,12 +25,12 @@ namespace StableDiffusion
                 // To use DirectML EP intall the Microsoft.ML.OnnxRuntime.DirectML and uninstall Microsoft.ML.OnnxRuntime.GPU
                 ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.DirectML,
                 // Set GPU Device ID.
-                DeviceId = 1,
+                DeviceId = 0,
                 // Update paths to your models
-                TextEncoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\text_encoder\model.onnx",
-                UnetOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\unet\model.onnx",
-                VaeDecoderOnnxPath = @"C:\code\StableDiffusion\StableDiffusion\models\vae_decoder\model.onnx",
-                SafetyModelPath = @"C:\code\StableDiffusion\StableDiffusion\models\safety_checker\model.onnx",
+                TextEncoderOnnxPath = @"s:\StableDiffusion\StableDiffusion\models\text_encoder\model.onnx",
+                UnetOnnxPath = @"s:\StableDiffusion\StableDiffusion\models\unet\model.onnx",
+                VaeDecoderOnnxPath = @"s:\StableDiffusion\StableDiffusion\models\vae_decoder\model.onnx",
+                SafetyModelPath = @"s:\StableDiffusion\StableDiffusion\models\safety_checker\model.onnx",
             };
 
             // Inference Stable Diff

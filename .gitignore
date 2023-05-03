@@ -352,3 +352,5 @@ MigrationBackup/
 
 *.pb
 model.onnx
+
+StableDiffusion/models/**
