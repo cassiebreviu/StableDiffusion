@@ -42,7 +42,7 @@ git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 -b onnx
         // Set your preferred Execution Provider. Currently DirectML and CPU are supported.
         ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.DirectML,
         // Set GPU Device ID.
-        DeviceId = 1,
+        DeviceId = 0,
         // Update paths to your models
         TextEncoderOnnxPath = @".\models\text_encoder\model.onnx",
         UnetOnnxPath = @".\models\unet\model.onnx",

@@ -17,7 +17,7 @@ namespace StableDiffusion.ML.OnnxRuntime
         public double GuidanceScale = 7.5;
         public int Height = 512;
         public int Width = 512;
-        public int DeviceId = 1;
+        public int DeviceId = 0;
 
 
         public string TokenizerOnnxPath = "cliptokenizer.onnx";

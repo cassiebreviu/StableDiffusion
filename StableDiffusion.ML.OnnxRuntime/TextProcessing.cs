@@ -86,7 +86,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             var lastHiddenStateD = (encoded.ToList().First().Value as IEnumerable<Float16>).ToArray();
             // cast to float
-            var lastHiddenState = lastHiddenStateD.Select(x =>(float)x).ToArray();
+            var lastHiddenState = lastHiddenStateD.Select(x => (float)BitConverter.UInt16BitsToHalf(x)).ToArray();
             var lastHiddenStateTensor = TensorHelper.CreateTensor(lastHiddenState.ToArray(), new[] { 1, 77, 768 });
 
             return lastHiddenStateTensor;

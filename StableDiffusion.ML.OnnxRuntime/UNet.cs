@@ -5,7 +5,8 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public class UNet
     {
-        public static List<NamedOnnxValue> CreateUnetModelInput(Tensor<float> encoderHiddenStates, Tensor<float> sample, float timeStep)
+        public static List<NamedOnnxValue> CreateUnetModelInput(
+Tensor<float> encoderHiddenStates, Tensor<float> sample, float timeStep)
         {
             // convert encoderHiddenStates to float16 tensors
             var encoderHiddenStatesFloat16 = TensorHelper.ConvertFloatToFloat16(encoderHiddenStates);
@@ -14,7 +15,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             var input = new List<NamedOnnxValue> {
                 NamedOnnxValue.CreateFromTensor<Float16>("encoder_hidden_states", encoderHiddenStatesFloat16),
                 NamedOnnxValue.CreateFromTensor<Float16>("sample", sampleFloat16),
-                NamedOnnxValue.CreateFromTensor("timestep", new DenseTensor<Float16>(new Float16[] { (Float16)timeStep }, new int[] { 1 }))
+                NamedOnnxValue.CreateFromTensor("timestep", new DenseTensor<Float16>(new Float16[] { BitConverter.HalfToUInt16Bits((Half)timeStep) }, new int[] { 1 }))
             };
             
             return input;

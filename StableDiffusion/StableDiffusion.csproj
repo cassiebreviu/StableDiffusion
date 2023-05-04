@@ -7,11 +7,19 @@
 		<Nullable>enable</Nullable>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
+  
+  <!-- TEMPORARY: we don't want to copy these from the microsoft.ai.directml package since we need a newer DLL for now -->
+  <PropertyGroup Label="Globals">
+    <Microsoft_AI_DirectML_SkipIncludeDir>True</Microsoft_AI_DirectML_SkipIncludeDir>
+    <Microsoft_AI_DirectML_SkipLink>True</Microsoft_AI_DirectML_SkipLink>
+    <Microsoft_AI_DirectML_SkipDebugLayerCopy>True</Microsoft_AI_DirectML_SkipDebugLayerCopy>
+    <Microsoft_AI_DirectML_SkipLibraryCopy>True</Microsoft_AI_DirectML_SkipLibraryCopy>
+  </PropertyGroup>
 
-	<ItemGroup>
+  <ItemGroup>
 		<ProjectReference Include="..\StableDiffusion.ML.OnnxRuntime\StableDiffusion.ML.OnnxRuntime.csproj" />
 		<PackageReference Include="Microsoft.ML" Version="2.0.1" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.15.0-dev-20230426-1156-dd1ddcc577" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.15.0-dev-20230502-1254-92309187b3" />
 	</ItemGroup>
 
 	<ItemGroup>
