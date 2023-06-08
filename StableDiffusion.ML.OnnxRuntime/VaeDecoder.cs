@@ -7,10 +7,12 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public static class VaeDecoder
     {
-        public static Tensor<float> Decoder(List<NamedOnnxValue> input, string VaeDecoderOnnxPath)
+        public static Tensor<float> Decoder(List<NamedOnnxValue> input, StableDiffusionConfig config)
         {
+            config.ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.Cpu;
+            var sessionOptions = config.GetSessionOptionsForEp();
             // Create an InferenceSession from the Model Path.
-            var vaeDecodeSession = new InferenceSession(VaeDecoderOnnxPath);
+            var vaeDecodeSession = new InferenceSession(config.VaeDecoderOnnxPath, sessionOptions);
 
            // Run session and send the input data in to get inference output. 
             var output = vaeDecodeSession.Run(input);

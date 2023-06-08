@@ -1,5 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using System.Diagnostics;
 
 namespace StableDiffusion.ML.OnnxRuntime
 {
@@ -73,67 +74,67 @@ namespace StableDiffusion.ML.OnnxRuntime
             // Preprocess text
             var textEmbeddings = TextProcessing.PreprocessText(prompt, config);
 
-                var scheduler = new LMSDiscreteScheduler();
-                //var scheduler = new EulerAncestralDiscreteScheduler();
-                var timesteps = scheduler.SetTimesteps(config.NumInferenceSteps);
-                //  If you use the same seed, you will get the same image result.
-                var seed = new Random().Next();
-                //var seed = 329922609;
-                Console.WriteLine($"Seed generated: {seed}");
-                // create latent tensor
+            var scheduler = new LMSDiscreteScheduler();
+            //var scheduler = new EulerAncestralDiscreteScheduler();
+            var timesteps = scheduler.SetTimesteps(config.NumInferenceSteps);
+            //  If you use the same seed, you will get the same image result.
+            var seed = new Random().Next();
+            //var seed = 329922609;
+            Console.WriteLine($"Seed generated: {seed}");
+            // create latent tensor
 
-                var latents = GenerateLatentSample(config, seed, scheduler.InitNoiseSigma);
+            var latents = GenerateLatentSample(config, seed, scheduler.InitNoiseSigma);
 
-                var sessionOptions = config.GetSessionOptionsForEp();
-                // Create Inference Session
-                var unetSession = new InferenceSession(config.UnetOnnxPath, sessionOptions);
+            var sessionOptions = config.GetSessionOptionsForEp();
+            // Create Inference Session
+            var unetSession = new InferenceSession(config.UnetOnnxPath, sessionOptions);
 
-                var input = new List<NamedOnnxValue>();
-                for (int t = 0; t < timesteps.Length; t++)
-                {
-                    // torch.cat([latents] * 2)
-                    var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, config.Height / 8, config.Width / 8 });
+            var input = new List<NamedOnnxValue>();
+            for (int t = 0; t < timesteps.Length; t++)
+            {
+                // torch.cat([latents] * 2)
+                var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, config.Height / 8, config.Width / 8 });
 
-                    // latent_model_input = scheduler.scale_model_input(latent_model_input, timestep = t)
-                    latentModelInput = scheduler.ScaleInput(latentModelInput, timesteps[t]);
+                // latent_model_input = scheduler.scale_model_input(latent_model_input, timestep = t)
+                latentModelInput = scheduler.ScaleInput(latentModelInput, timesteps[t]);
 
-                    Console.WriteLine($"scaled model input {latentModelInput[0]} at step {t}. Max {latentModelInput.Max()} Min{latentModelInput.Min()}");
-                    input = CreateUnetModelInput(textEmbeddings, latentModelInput, timesteps[t]);
+                Console.WriteLine($"scaled model input {latentModelInput[0]} at step {t}. Max {latentModelInput.Max()} Min{latentModelInput.Min()}");
+                input = CreateUnetModelInput(textEmbeddings, latentModelInput, timesteps[t]);
 
-                    // Run Inference
-                    var output = unetSession.Run(input);
-                    var outputTensor = (output.ToList().First().Value as DenseTensor<float>);
+                // Run Inference
+                var output = unetSession.Run(input);
+                var outputTensor = (output.ToList().First().Value as DenseTensor<float>);
 
-                    // Split tensors from 2,4,64,64 to 1,4,64,64
-                    var splitTensors = TensorHelper.SplitTensor(outputTensor, new[] { 1, 4, config.Height / 8, config.Width / 8 });
-                    var noisePred = splitTensors.Item1;
-                    var noisePredText = splitTensors.Item2;
+                // Split tensors from 2,4,64,64 to 1,4,64,64
+                var splitTensors = TensorHelper.SplitTensor(outputTensor, new[] { 1, 4, config.Height / 8, config.Width / 8 });
+                var noisePred = splitTensors.Item1;
+                var noisePredText = splitTensors.Item2;
 
-                    // Perform guidance
-                    noisePred = performGuidance(noisePred, noisePredText, config.GuidanceScale);
+                // Perform guidance
+                noisePred = performGuidance(noisePred, noisePredText, config.GuidanceScale);
 
-                    // LMS Scheduler Step
-                    latents = scheduler.Step(noisePred, timesteps[t], latents);
-                    Console.WriteLine($"latents result after step {t} min {latents.Min()} max {latents.Max()}");
+                // LMS Scheduler Step
+                latents = scheduler.Step(noisePred, timesteps[t], latents);
+                Console.WriteLine($"latents result after step {t} min {latents.Min()} max {latents.Max()}");
 
-                }
+            }
 
-                // Scale and decode the image latents with vae.
-                // latents = 1 / 0.18215 * latents
-                latents = TensorHelper.MultipleTensorByFloat(latents.ToArray(), (1.0f / 0.18215f), latents.Dimensions.ToArray());
-                var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
+            // Scale and decode the image latents with vae.
+            // latents = 1 / 0.18215 * latents
+            latents = TensorHelper.MultipleTensorByFloat(latents.ToArray(), (1.0f / 0.18215f), latents.Dimensions.ToArray());
+            var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
 
-                // Decode image
-                var imageResultTensor = VaeDecoder.Decoder(decoderInput, config.VaeDecoderOnnxPath);
+            // Decode image
+            var imageResultTensor = VaeDecoder.Decoder(decoderInput, config);
+            var isNotSafe = SafetyChecker.IsNotSafe(imageResultTensor, config);
 
-            // TODO: Fix safety checker model
-            //var isSafe = SafetyChecker.IsSafe(imageResultTensor);
+            if (isNotSafe)
+            {
+                return null;
 
-            ////if (isSafe == 1)
-            //{ 
+            }
             var image = VaeDecoder.ConvertToImage(imageResultTensor, config);
             return image;
-            //}
 
         }
 
