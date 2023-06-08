@@ -20,7 +20,6 @@ namespace StableDiffusion.ML.OnnxRuntime
         public int DeviceId = 0;
 
 
-        public string OrtExtensionsPath = "ortextensions.dll";
         public string TokenizerOnnxPath = "cliptokenizer.onnx";
         public string TextEncoderOnnxPath = "";
         public string UnetOnnxPath = "";

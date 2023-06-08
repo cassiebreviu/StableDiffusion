@@ -29,7 +29,7 @@ namespace StableDiffusion.ML.OnnxRuntime
         {
             // Create session options for custom op of extensions
             var sessionOptions = new SessionOptions();
-            sessionOptions.RegisterCustomOpLibraryV2(config.OrtExtensionsPath, out var libraryHandle);
+            sessionOptions.RegisterOrtExtensions();
             
             // Create an InferenceSession from the onnx clip tokenizer.
             var tokenizeSession = new InferenceSession(config.TokenizerOnnxPath, sessionOptions);
