@@ -4,13 +4,16 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public class StableDiffusionConfig
     {
-        
         public enum ExecutionProvider
         {
             DirectML = 0,
             Cuda = 1,
-            Cpu = 2
+            Cpu = 2,
+            NNPI = 3,
+            CoreML = 4,
+            SNPE = 5
         }
+
         // default props
         public int NumInferenceSteps = 15;
         public ExecutionProvider ExecutionProviderTarget = ExecutionProvider.Cuda;
@@ -45,6 +48,23 @@ namespace StableDiffusion.ML.OnnxRuntime
                 case ExecutionProvider.Cpu:
                     sessionOptions.AppendExecutionProvider_CPU();
                     return sessionOptions;
+                case ExecutionProvider.NNPI:
+                    sessionOptions.AppendExecutionProvider_Nnapi(
+                        NnapiFlags.NNAPI_FLAG_USE_FP16 |
+                        NnapiFlags.NNAPI_FLAG_CPU_DISABLED);
+                    return sessionOptions;
+                case ExecutionProvider.CoreML:
+                    sessionOptions.AppendExecutionProvider_CoreML(
+                        CoreMLFlags.COREML_FLAG_ONLY_ENABLE_DEVICE_WITH_ANE
+                    );
+                    return sessionOptions;
+                case ExecutionProvider.SNPE:
+                    sessionOptions.AppendExecutionProvider("SNPE", new Dictionary<string, string>()
+                    {
+                        { "runtime", "DSP" },
+                        { "buffer_type", "FLOAT" }
+                    });
+                    return sessionOptions;
                 default:
                 case ExecutionProvider.Cuda:
                     sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
@@ -53,14 +73,7 @@ namespace StableDiffusion.ML.OnnxRuntime
                     sessionOptions.AppendExecutionProvider_CPU();
                     //sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(cudaProviderOptions);
                     return sessionOptions;
-
             }
-
         }
-
-
-
     }
-
-
 }
