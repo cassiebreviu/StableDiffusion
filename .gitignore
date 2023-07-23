@@ -353,3 +353,8 @@ MigrationBackup/
 *.pb
 model.onnx
 /StableDiffusion/models
+
+# Other IDEs
+.idea/
+.vscode/
+.cr/
