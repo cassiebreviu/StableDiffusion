@@ -72,7 +72,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             sigma = (float)Math.Sqrt((Math.Pow(sigma, 2) + 1));
 
             // Divide sample tensor shape {2,4,64,64} by sigma
-            sample = TensorHelper.DivideTensorByFloat(sample.ToArray(), sigma, sample.Dimensions.ToArray());
+            sample = TensorHelper.DivideTensorByFloat(sample, sigma, sample.Dimensions);
             is_scale_input_called = true;
             return sample;
         }

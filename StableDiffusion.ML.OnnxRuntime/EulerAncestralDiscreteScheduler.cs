@@ -130,7 +130,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             // 2. Convert to an ODE derivative
             var sampleMinusPredOriginalSample = TensorHelper.SubtractTensors(sample, predOriginalSample);
-            DenseTensor<float> derivative = TensorHelper.DivideTensorByFloat(sampleMinusPredOriginalSample.ToArray(), sigma, predOriginalSample.Dimensions.ToArray());// (sample - predOriginalSample) / sigma;
+            DenseTensor<float> derivative = TensorHelper.DivideTensorByFloat(sampleMinusPredOriginalSample, sigma, predOriginalSample.Dimensions);// (sample - predOriginalSample) / sigma;
 
             float dt = sigmaDown - sigma;
 

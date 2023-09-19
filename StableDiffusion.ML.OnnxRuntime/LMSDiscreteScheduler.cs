@@ -124,7 +124,7 @@ namespace StableDiffusion.ML.OnnxRuntime
                 {
                     predOriginalSampleArray[i] = sampleArray[i] - sigma * modelOutPutArray[i];
                 }
-                predOriginalSample = TensorHelper.CreateTensor(predOriginalSampleArray, modelOutput.Dimensions.ToArray());
+                predOriginalSample = TensorHelper.CreateTensor(predOriginalSampleArray, modelOutput.Dimensions);
 
             }
             else if (this._predictionType == "v_prediction")
@@ -138,7 +138,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             }
 
             // 2. Convert to an ODE derivative
-            var derivativeItems = new DenseTensor<float>(sample.Dimensions.ToArray());
+            var derivativeItems = new DenseTensor<float>(sample.Dimensions);
 
             var derivativeItemsArray = new float[derivativeItems.Length];
             
@@ -147,7 +147,7 @@ namespace StableDiffusion.ML.OnnxRuntime
                 //predOriginalSample = (sample - predOriginalSample) / sigma;
                 derivativeItemsArray[i] = (sampleArray[i] - predOriginalSampleArray[i]) / sigma;
             }
-            derivativeItems =  TensorHelper.CreateTensor(derivativeItemsArray, derivativeItems.Dimensions.ToArray());
+            derivativeItems =  TensorHelper.CreateTensor(derivativeItemsArray, derivativeItems.Dimensions);
 
             this.Derivatives?.Add(derivativeItems);
 
@@ -175,13 +175,13 @@ namespace StableDiffusion.ML.OnnxRuntime
             {
                 var item = lmsCoeffsAndDerivatives.ElementAt(m);
                 // Multiply to coeff by each derivatives to create the new tensors
-                lmsDerProduct[m] = TensorHelper.MultipleTensorByFloat(item.derivative.ToArray(), (float)item.lmsCoeff, item.derivative.Dimensions.ToArray());
+                lmsDerProduct[m] = TensorHelper.MultipleTensorByFloat(item.derivative, (float)item.lmsCoeff, item.derivative.Dimensions);
             }
             // Sum the tensors
             var sumTensor = TensorHelper.SumTensors(lmsDerProduct, new[] { 1, 4, 64, 64 });
 
             // Add the sumed tensor to the sample
-            var prevSample = TensorHelper.AddTensors(sample.ToArray(), sumTensor.ToArray(), sample.Dimensions.ToArray());
+            var prevSample = TensorHelper.AddTensors(sample, sumTensor, sample.Dimensions);
 
             Console.WriteLine(prevSample[0]);
             return prevSample;

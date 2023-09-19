@@ -45,7 +45,7 @@ namespace StableDiffusion.ML.OnnxRuntime
                 latentsArray[i] = (float)standardNormalRand * initNoiseSigma;
             }
 
-            latents = TensorHelper.CreateTensor(latentsArray, latents.Dimensions.ToArray());
+            latents = TensorHelper.CreateTensor(latentsArray, latents.Dimensions);
 
             return latents;
 
@@ -93,7 +93,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             for (int t = 0; t < timesteps.Length; t++)
             {
                 // torch.cat([latents] * 2)
-                var latentModelInput = TensorHelper.Duplicate(latents.ToArray(), new[] { 2, 4, config.Height / 8, config.Width / 8 });
+                var latentModelInput = TensorHelper.Duplicate(latents, new[] { 2, 4, config.Height / 8, config.Width / 8 });
 
                 // latent_model_input = scheduler.scale_model_input(latent_model_input, timestep = t)
                 latentModelInput = scheduler.ScaleInput(latentModelInput, timesteps[t]);
@@ -121,7 +121,7 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             // Scale and decode the image latents with vae.
             // latents = 1 / 0.18215 * latents
-            latents = TensorHelper.MultipleTensorByFloat(latents.ToArray(), (1.0f / 0.18215f), latents.Dimensions.ToArray());
+            latents = TensorHelper.MultipleTensorByFloat(latents, (1.0f / 0.18215f), latents.Dimensions);
             var decoderInput = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("latent_sample", latents) };
 
             // Decode image
