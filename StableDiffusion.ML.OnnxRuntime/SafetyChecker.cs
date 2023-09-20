@@ -15,19 +15,23 @@ namespace StableDiffusion.ML.OnnxRuntime
             //images input
             var inputImagesTensor = ReorderTensor(inputTensor);
 
-            var input = new List<NamedOnnxValue> { //batch channel height width
-                                                    NamedOnnxValue.CreateFromTensor("clip_input", inputTensor),
-                                                    //batch, height, width, channel
-                                                    NamedOnnxValue.CreateFromTensor("images", inputImagesTensor)};
+            var input = new List<NamedOnnxValue>
+            {
+                //batch channel height width
+                 NamedOnnxValue.CreateFromTensor("clip_input", inputTensor),
 
-            var sessionOptions = config.GetSessionOptionsForEp();
-            var session = new InferenceSession(config.SafetyModelPath, sessionOptions);
+                 //batch, height, width, channel
+                 NamedOnnxValue.CreateFromTensor("images", inputImagesTensor)
+            };
 
             // Run session and send the input data in to get inference output. 
-            var output = session.Run(input);
-            var result = (output.ToList().Last().Value as IEnumerable<bool>).ToArray()[0];
-
-            return result;
+            using (var sessionOptions = config.GetSessionOptionsForEp())
+            using (var session = new InferenceSession(config.SafetyModelPath, sessionOptions))
+            using (var output = session.Run(input))
+            {
+                var result = output.LastElementAs<IEnumerable<bool>>();
+                return result.First();
+            }
         }
 
         private static DenseTensor<float> ReorderTensor(Tensor<float> inputTensor)

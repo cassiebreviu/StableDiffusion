@@ -9,15 +9,15 @@ namespace StableDiffusion.ML.OnnxRuntime
     {
         public static Tensor<float> Decoder(List<NamedOnnxValue> input, StableDiffusionConfig config)
         {
-            var sessionOptions = config.GetSessionOptionsForEp();
             // Create an InferenceSession from the Model Path.
-            var vaeDecodeSession = new InferenceSession(config.VaeDecoderOnnxPath, sessionOptions);
-
-           // Run session and send the input data in to get inference output. 
-            var output = vaeDecodeSession.Run(input);
-            var result = (output.ToList().First().Value as Tensor<float>);
-
-            return result;
+            // Run session and send the input data in to get inference output. 
+            using (var sessionOptions = config.GetSessionOptionsForEp())
+            using (var vaeDecodeSession = new InferenceSession(config.VaeDecoderOnnxPath, sessionOptions))
+            using (var output = vaeDecodeSession.Run(input))
+            {
+                var result = output.FirstElementAs<Tensor<float>>();
+                return result.Clone();
+            }
         }
 
         // create method to convert float array to an image with imagesharp
