@@ -6,19 +6,46 @@ namespace StableDiffusion.ML.OnnxRuntime
     public abstract class SchedulerBase
     {
         protected readonly int _numTrainTimesteps;
+        protected readonly string _predictionType;
+        protected readonly float _beta_start;
+        protected readonly float _beta_end;
+        protected readonly string _beta_schedule;
+        protected readonly List<float> _trained_betas;
+
+        protected bool is_scale_input_called;
         protected List<float> _alphasCumulativeProducts;
-        public bool is_scale_input_called;
+
+        public SchedulerBase(int numTrainTimesteps, float betaStart, float betaEnd, string betaSchedule, string predictionType, List<float> trainedBetas)
+        {
+            _numTrainTimesteps = numTrainTimesteps;
+            _predictionType = predictionType;
+            _beta_start = betaStart;
+            _beta_end = betaEnd;
+            _beta_schedule = betaSchedule;
+            _trained_betas = trainedBetas;
+        }
 
         public abstract List<int> Timesteps { get; set; }
         public abstract Tensor<float> Sigmas { get; set; }
         public abstract float InitNoiseSigma { get; set; }
+        public abstract int[] SetTimesteps(int num_inference_steps);
+        public abstract DenseTensor<float> Step(Tensor<float> modelOutput, int timestep, Tensor<float> sample, int order = 4);
 
-        public SchedulerBase(int _numTrainTimesteps = 1000)
+        public DenseTensor<float> ScaleInput(DenseTensor<float> sample, int timestep)
         {
-            this._numTrainTimesteps = _numTrainTimesteps;
+            // Get step index of timestep from TimeSteps
+            int stepIndex = this.Timesteps.IndexOf(timestep);
+            // Get sigma at stepIndex
+            var sigma = this.Sigmas[stepIndex];
+            sigma = (float)Math.Sqrt((Math.Pow(sigma, 2) + 1));
+
+            // Divide sample tensor shape {2,4,64,64} by sigma
+            sample = TensorHelper.DivideTensorByFloat(sample, sigma, sample.Dimensions);
+            is_scale_input_called = true;
+            return sample;
         }
 
-        public static double[] Interpolate(double[] timesteps, double[] range, List<double> sigmas)
+        protected double[] Interpolate(double[] timesteps, double[] range, List<double> sigmas)
         {
 
             // Create an output array with the same shape as timesteps
@@ -62,26 +89,5 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             return result.ToArray<double>();
         }
-
-        public DenseTensor<float> ScaleInput(DenseTensor<float> sample, int timestep)
-        {
-            // Get step index of timestep from TimeSteps
-            int stepIndex = this.Timesteps.IndexOf(timestep);
-            // Get sigma at stepIndex
-            var sigma = this.Sigmas[stepIndex];
-            sigma = (float)Math.Sqrt((Math.Pow(sigma, 2) + 1));
-
-            // Divide sample tensor shape {2,4,64,64} by sigma
-            sample = TensorHelper.DivideTensorByFloat(sample, sigma, sample.Dimensions);
-            is_scale_input_called = true;
-            return sample;
-        }
-        public abstract int[] SetTimesteps(int num_inference_steps);
-
-        public abstract DenseTensor<float> Step(
-               Tensor<float> modelOutput,
-               int timestep,
-               Tensor<float> sample,
-               int order = 4);
     }
 }
