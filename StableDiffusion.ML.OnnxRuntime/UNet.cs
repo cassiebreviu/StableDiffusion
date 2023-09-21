@@ -83,7 +83,7 @@ namespace StableDiffusion.ML.OnnxRuntime
             Console.WriteLine($"Seed generated: {seed}");
             // create latent tensor
 
-            var latents = GenerateLatentSample(config, seed, scheduler.InitNoiseSigma);
+            var latents = GenerateLatentSample(config, seed, scheduler.GetInitNoiseSigma());
 
             // Create Inference Session
             using (var sessionOptions = config.GetSessionOptionsForEp())
