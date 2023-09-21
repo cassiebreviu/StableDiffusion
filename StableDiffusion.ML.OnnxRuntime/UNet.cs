@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using System.Diagnostics;
+using StableDiffusion.ML.OnnxRuntime.Scheduler;
 
 namespace StableDiffusion.ML.OnnxRuntime
 {

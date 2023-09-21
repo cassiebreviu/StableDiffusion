@@ -1,4 +1,4 @@
-﻿namespace StableDiffusion.ML.OnnxRuntime
+﻿namespace StableDiffusion.ML.OnnxRuntime.Scheduler
 {
     public class SchedulerConfig
     {

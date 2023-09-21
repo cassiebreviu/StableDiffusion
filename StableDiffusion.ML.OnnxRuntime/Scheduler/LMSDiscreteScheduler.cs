@@ -1,7 +1,7 @@
 ﻿using MathNet.Numerics;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
-namespace StableDiffusion.ML.OnnxRuntime
+namespace StableDiffusion.ML.OnnxRuntime.Scheduler
 {
     public class LMSDiscreteScheduler : SchedulerBase
     {
