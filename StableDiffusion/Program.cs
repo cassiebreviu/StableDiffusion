@@ -11,7 +11,10 @@ namespace StableDiffusion
 
             //Default args
             var prompt = "a fireplace in an old cabin in the woods";
-            Console.WriteLine(prompt);
+            Console.WriteLine($"Prompt: {prompt}");
+
+            var negativePrompt = "stone";
+            Console.WriteLine($"Negative Prompt: {negativePrompt}");
 
             var config = new StableDiffusionConfig
             {
@@ -34,7 +37,7 @@ namespace StableDiffusion
             };
 
             // Inference Stable Diff
-            var image = UNet.Inference(prompt, config);
+            var image = UNet.Inference(prompt, negativePrompt, config);
 
             // If image failed or was unsafe it will return null.
             if (image == null)

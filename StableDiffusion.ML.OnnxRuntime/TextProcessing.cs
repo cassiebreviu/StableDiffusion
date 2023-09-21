@@ -5,14 +5,16 @@ namespace StableDiffusion.ML.OnnxRuntime
 {
     public static class TextProcessing
     {
-        public static DenseTensor<float> PreprocessText(String prompt, StableDiffusionConfig config)
+        public static DenseTensor<float> PreprocessText(string prompt, string negativePrompt, StableDiffusionConfig config)
         {
             // Load the tokenizer and text encoder to tokenize and encode the text.
             var textTokenized = TokenizeText(prompt, config);
             var textPromptEmbeddings = TextEncoder(textTokenized, config).ToArray();
 
-            // Create uncond_input of blank tokens
-            var uncondInputTokens = CreateUncondInput();
+            // Create ngeative prompt tokens or blank tokens
+            var uncondInputTokens = string.IsNullOrEmpty(negativePrompt)
+                ? CreateUncondInput()
+                : TokenizeText(negativePrompt, config);
             var uncondEmbedding = TextEncoder(uncondInputTokens, config).ToArray();
 
             // Concant textEmeddings and uncondEmbedding

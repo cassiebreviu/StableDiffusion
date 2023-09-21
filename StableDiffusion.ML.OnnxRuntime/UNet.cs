@@ -69,10 +69,10 @@ namespace StableDiffusion.ML.OnnxRuntime
             return noisePred;
         }
 
-        public static SixLabors.ImageSharp.Image Inference(String prompt, StableDiffusionConfig config)
+        public static SixLabors.ImageSharp.Image Inference(string prompt, string negativePrompt, StableDiffusionConfig config)
         {
             // Preprocess text
-            var textEmbeddings = TextProcessing.PreprocessText(prompt, config);
+            var textEmbeddings = TextProcessing.PreprocessText(prompt, negativePrompt, config);
 
             var scheduler = new LMSDiscreteScheduler();
             //var scheduler = new EulerAncestralDiscreteScheduler();
