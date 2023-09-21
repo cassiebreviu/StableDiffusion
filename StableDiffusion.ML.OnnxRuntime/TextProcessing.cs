@@ -28,33 +28,37 @@ namespace StableDiffusion.ML.OnnxRuntime
         public static int[] TokenizeText(string text, StableDiffusionConfig config)
         {
             // Create session options for custom op of extensions
-            var sessionOptions = new SessionOptions();
-            sessionOptions.RegisterOrtExtensions();
-            
-            // Create an InferenceSession from the onnx clip tokenizer.
-            var tokenizeSession = new InferenceSession(config.TokenizerOnnxPath, sessionOptions);
-            var inputTensor = new DenseTensor<string>(new string[] { text }, new int[] { 1 });
-            var inputString = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<string>("string_input", inputTensor) };
-            // Run session and send the input data in to get inference output. 
-            var tokens = tokenizeSession.Run(inputString);
-
-
-            var inputIds = (tokens.ToList().First().Value as IEnumerable<long>).ToArray();
-            Console.WriteLine(String.Join(" ", inputIds));
-
-            // Cast inputIds to Int32
-            var InputIdsInt = inputIds.Select(x => (int)x).ToArray();
-
-            var modelMaxLength = 77;
-            // Pad array with 49407 until length is modelMaxLength
-            if (InputIdsInt.Length < modelMaxLength)
+            using (var sessionOptions = new SessionOptions())
             {
-                var pad = Enumerable.Repeat(49407, 77 - InputIdsInt.Length).ToArray();
-                InputIdsInt = InputIdsInt.Concat(pad).ToArray();
+                sessionOptions.RegisterOrtExtensions();
+
+                // Create an InferenceSession from the onnx clip tokenizer.
+                using (var tokenizeSession = new InferenceSession(config.TokenizerOnnxPath, sessionOptions))
+                {
+                    var inputTensor = new DenseTensor<string>(new string[] { text }, new int[] { 1 });
+                    var inputString = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<string>("string_input", inputTensor) };
+
+                    // Run session and send the input data in to get inference output. 
+                    using (var tokens = tokenizeSession.Run(inputString))
+                    {
+                        var inputIds = tokens.FirstElementAs<IEnumerable<long>>();
+                        Console.WriteLine(String.Join(" ", inputIds));
+
+                        // Cast inputIds to Int32
+                        var InputIdsInt = inputIds.Select(x => (int)x).ToArray();
+
+                        var modelMaxLength = 77;
+                        // Pad array with 49407 until length is modelMaxLength
+                        if (InputIdsInt.Length < modelMaxLength)
+                        {
+                            var pad = Enumerable.Repeat(49407, 77 - InputIdsInt.Length).ToArray();
+                            InputIdsInt = InputIdsInt.Concat(pad).ToArray();
+                        }
+
+                        return InputIdsInt;
+                    }
+                }
             }
-
-            return InputIdsInt;
-
         }
 
         public static int[] CreateUncondInput()
@@ -77,18 +81,16 @@ namespace StableDiffusion.ML.OnnxRuntime
 
             var input = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor<int>("input_ids", input_ids) };
 
-            // Set CUDA EP
-            var sessionOptions = config.GetSessionOptionsForEp();
-
-            var encodeSession = new InferenceSession(config.TextEncoderOnnxPath, sessionOptions);
             // Run inference.
-            var encoded = encodeSession.Run(input);
+            using (var sessionOptions = config.GetSessionOptionsForEp())
+            using (var encodeSession = new InferenceSession(config.TextEncoderOnnxPath, sessionOptions))
+            using (var encoded = encodeSession.Run(input))
+            {
+                var lastHiddenState = encoded.FirstElementAs<IEnumerable<float>>();
+                var lastHiddenStateTensor = TensorHelper.CreateTensor(lastHiddenState.ToArray(), new[] { 1, 77, 768 });
 
-            var lastHiddenState = (encoded.ToList().First().Value as IEnumerable<float>).ToArray();
-            var lastHiddenStateTensor = TensorHelper.CreateTensor(lastHiddenState.ToArray(), new[] { 1, 77, 768 });
-
-            return lastHiddenStateTensor;
-
+                return lastHiddenStateTensor;
+            }
         }
 
     }
