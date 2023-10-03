@@ -19,11 +19,11 @@ namespace StableDiffusion
                 NumInferenceSteps = 15,
                 // Scale for classifier-free guidance
                 GuidanceScale = 7.5,
-                // Set your preferred Execution Provider. Currently (GPU, DirectML, CPU) are supported in this project.
+                // Set your preferred Execution Provider. Currently (GPU, DirectML, CPU, CoreML) are supported in this project.
                 // ONNX Runtime supports many more than this. Learn more here: https://onnxruntime.ai/docs/execution-providers/
                 // The config is defaulted to CUDA. You can override it here if needed.
                 // To use DirectML EP intall the Microsoft.ML.OnnxRuntime.DirectML and uninstall Microsoft.ML.OnnxRuntime.GPU
-                ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.Cuda,
+                ExecutionProviderTarget = StableDiffusionConfig.ExecutionProvider.CoreML,
                 // Set GPU Device ID.
                 DeviceId = 0,
                 // Update paths to your models
