@@ -10,8 +10,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\StableDiffusion.ML.OnnxRuntime\StableDiffusion.ML.OnnxRuntime.csproj" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.15.0" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.15.0" />
+
 	</ItemGroup>
 
 </Project>

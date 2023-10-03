@@ -9,7 +9,8 @@ namespace StableDiffusion.ML.OnnxRuntime
         {
             DirectML = 0,
             Cuda = 1,
-            Cpu = 2
+            Cpu = 2,
+            CoreML = 3
         }
         // default props
         public int NumInferenceSteps = 15;
@@ -44,6 +45,9 @@ namespace StableDiffusion.ML.OnnxRuntime
                     return sessionOptions;
                 case ExecutionProvider.Cpu:
                     sessionOptions.AppendExecutionProvider_CPU();
+                    return sessionOptions;
+                case ExecutionProvider.CoreML:
+                    sessionOptions.AppendExecutionProvider_CoreML();
                     return sessionOptions;
                 default:
                 case ExecutionProvider.Cuda:
